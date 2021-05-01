@@ -51,23 +51,30 @@ export class Web3Service {
     );
     const o = Object.assign({}, ...token) as WalletToken;
     const data = await this.priceService.getPrices([o.name]);
-    console.log(data);
+    const formatedBalance = toDecimal(o.balance, o.decimals).toNumber();
 
-    return o;
+    return {
+      ...o,
+      balance: formatedBalance,
+      totalPrice: formatedBalance * data.safemoon.usd,
+    };
   };
 
   getBnbBalance: (address: string) => Promise<WalletToken> = async (
     address
   ) => {
     const bnbBalance = await this.web3.eth.getBalance(address);
-    console.log(toDecimal(bnbBalance, 18).toNumber());
+    const data = await this.priceService.getPrices(["binancecoin"]);
+    const formatedBalance = toDecimal(bnbBalance, 18).toNumber();
 
     return new Promise((resolve) =>
       resolve({
-        balance: bnbBalance,
+        balance: formatedBalance,
         decimals: 18,
         symbol: "BNB",
         name: "binancecoin",
+        totalPrice:
+          parseFloat(formatedBalance.toString()) * data.binancecoin.usd,
       })
     );
   };

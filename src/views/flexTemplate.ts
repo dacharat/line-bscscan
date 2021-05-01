@@ -1,5 +1,6 @@
-import { Position } from "../types";
+import { Position, WalletToken } from "../types";
 import { formatNumber } from "../utils";
+import { token as tokenLogo } from "../constants/wallet";
 
 export const addressBar = (address: string) => ({
   type: "text",
@@ -9,14 +10,14 @@ export const addressBar = (address: string) => ({
   contents: [],
 });
 
-export const tableHeader = () => ({
+export const tableHeader = (header: string) => ({
   type: "box",
   layout: "horizontal",
   paddingTop: "4%",
   contents: [
     {
       type: "text",
-      text: "Pool",
+      text: header,
       weight: "bold",
       color: "#7645D9",
       align: "start",
@@ -152,6 +153,89 @@ export const poolLine = (position: Position) => ({
             {
               type: "text",
               text: `$${formatNumber(position.totalValue)}`,
+              size: "xs",
+              align: "end",
+              offsetTop: "6%",
+              contents: [],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+export const walletLine = (wallet: WalletToken) => ({
+  type: "box",
+  layout: "vertical",
+  contents: [
+    {
+      type: "box",
+      layout: "horizontal",
+      paddingTop: "4%",
+      paddingBottom: "4%",
+      contents: [
+        {
+          type: "box",
+          layout: "vertical",
+          flex: 8,
+          backgroundColor: "#FFFFFF00",
+          contents: [
+            {
+              type: "box",
+              layout: "horizontal",
+              paddingBottom: "2%",
+              contents: [
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  width: "60px",
+                  contents: [
+                    {
+                      type: "image",
+                      url: tokenLogo[wallet.symbol.toLowerCase()],
+                      size: "xxs",
+                    },
+                  ],
+                },
+                {
+                  type: "text",
+                  text: wallet.symbol,
+                  weight: "regular",
+                  size: "sm",
+                  align: "start",
+                  gravity: "center",
+                  offsetStart: "24%",
+                  contents: [],
+                },
+              ],
+            },
+            {
+              type: "box",
+              layout: "horizontal",
+              paddingBottom: "2%",
+              contents: [
+                {
+                  type: "text",
+                  text: `${wallet.balance} ${wallet.symbol}`,
+                  size: "xs",
+                  align: "start",
+                  gravity: "center",
+                  contents: [],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "box",
+          layout: "vertical",
+          flex: 4,
+          backgroundColor: "#FFFFFFFF",
+          contents: [
+            {
+              type: "text",
+              text: `$${formatNumber(wallet.totalPrice)}`,
               size: "xs",
               align: "end",
               offsetTop: "6%",

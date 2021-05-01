@@ -96,4 +96,5 @@ export type WalletToken = {
   balance: number | string;
   symbol: string;
   name: string;
+  totalPrice: number;
 };

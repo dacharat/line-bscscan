@@ -6,6 +6,7 @@ import {
   poolLine,
   summary,
   tableHeader,
+  walletLine,
 } from "./views/flexTemplate";
 import { get, sortBy } from "lodash";
 import { isValidAddress, shortenAddress } from "./utils";
@@ -15,22 +16,20 @@ import MasterChef from "./abi/MasterChef.json";
 import { PriceService } from "./services/priceService";
 import { TokenHelper } from "./services/tokenHelper";
 import { Web3Service } from "./services/web3Service";
-// import bodyParser from "body-parser";
 import express from "express";
 import { pools } from "./constants/pools";
 import axios from "axios";
 
 // Init Express
 const app = express();
-// app.use(bodyParser.json());
 app.use(express.json());
 const port = process.env.PORT || 3000;
 
 console.log("==========> ", process.env.LINE_CHANNEL_ACCESS_TOKEN);
-const ACCRSS_TOKEN = "process.env.LINE_CHANNEL_ACCESS_TOKEN";
+const ACCRSS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 // Init LINE SDK
 const lineClient = new Client({
-  channelAccessToken: ACCRSS_TOKEN,
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 });
 
 // Init Masterchef
@@ -82,7 +81,7 @@ app.post("/webhook", async (req, res) => {
         layout: "vertical",
         contents: [
           addressBar(shortenAddress(address)),
-          tableHeader(),
+          tableHeader("Pool"),
           ...positions.map((position) => poolLine(position)),
           summary(totalValue),
         ],
@@ -94,23 +93,17 @@ app.post("/webhook", async (req, res) => {
 
 app.get("/test/:id", async (req, res) => {
   const address = req.params.id;
-  console.log("===============> address: ", address);
   const stakings = await masterchef.getStaking(pools, address);
-  console.log("===============> stakings: ", stakings);
   const positions = sortBy(
     stakings.map((stake) => getPositions(stake)),
     ["totalValue"]
   ).reverse();
-  console.log("===============> positions: ", positions);
-  const totalValue = positions.reduce(
-    (sum, position) => sum + position.totalValue,
-    0
-  );
 
-  const b = await web3Service.getBalance(address);
-  console.log("balance ============> ", b);
-  const s = await web3Service.getSafemoonBalance(address);
-  console.log("balance ============> ", s);
+  const walletTokens = await web3Service.getWalletBalance(address);
+
+  const totalValue =
+    positions.reduce((sum, position) => sum + position.totalValue, 0) +
+    walletTokens.reduce((sum, token) => sum + token.totalPrice, 0);
 
   const data = {
     type: "flex",
@@ -122,19 +115,23 @@ app.get("/test/:id", async (req, res) => {
         layout: "vertical",
         contents: [
           addressBar(shortenAddress(address)),
-          tableHeader(),
+          tableHeader("Wallet"),
+          ...walletTokens.map(walletLine),
+          tableHeader("Pool"),
           ...positions.map((position) => poolLine(position)),
           summary(totalValue),
         ],
       },
     },
   };
+
   const body = {
-    to: "user id",
+    to: process.env.LINE_USER_ID,
     messages: [data],
   };
 
   const URL = "https://api.line.me/v2/bot/message/push";
+
   axios.post(URL, body, {
     headers: {
       Authorization: `Bearer ${ACCRSS_TOKEN}`,
@@ -144,14 +141,20 @@ app.get("/test/:id", async (req, res) => {
   res.status(200).send({ data });
 });
 
-// app.listen(port, () => {
-//   console.log(`Server is running at https://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server is running at https://localhost:${port}`);
+});
 
-const test = async () => {
-  const address = "0x8076C74C5e3F5852037F31Ff0093Eeb8c8ADd8D3";
-  const s = await web3Service.getWalletBalance(address);
-  console.log(s);
-};
+// const test = async () => {
+//   const address = "0x8076C74C5e3F5852037F31Ff0093Eeb8c8ADd8D3";
+//   const s = await web3Service.getWalletBalance(address);
+//   // try {
+//   //   const poolsFetch = await masterchef.getPoolInfos();
+//   //   console.log(poolsFetch);
+//   // } catch (e) {
+//   //   console.log(e);
+//   // }
+//   console.log(s);
+// };
 
-test().then((_) => console.log("done"));
+// test().then((_) => console.log("done"));

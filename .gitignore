@@ -49,3 +49,4 @@ lerna-debug.log*
 dump.rdb
 
 token*.txt
+test.txt

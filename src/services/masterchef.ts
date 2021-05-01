@@ -13,6 +13,8 @@ import { getTokenData } from "../constants/coingecko";
 import { isEmpty } from "lodash";
 import { toDecimal } from "../utils";
 
+// import fs from "fs";
+
 export class Masterchef {
   constructor(
     private readonly masterchef: Contract,
@@ -23,6 +25,7 @@ export class Masterchef {
     const rewardAddress = (
       await this.masterchef.methods.cake().call()
     ).toLowerCase();
+
     const rewardSymbol = await this.helper.getTokenSymbol(rewardAddress);
     const rewardDecimals = await this.helper.getTokenDecimals(rewardAddress);
     const rewardLogo = getTokenData(rewardAddress)?.logo;
@@ -79,6 +82,10 @@ export class Masterchef {
         }
       })
     );
+    // fs.writeFileSync(
+    //   "/Users/jack/MyDocument/WebDevloper/crypto/line-pancakeswap/test.txt",
+    //   JSON.stringify(poolInfos)
+    // );
     return poolInfos.filter((poolInfo) => !isEmpty(poolInfo));
   };
 
@@ -103,13 +110,13 @@ export class Masterchef {
         const rewardPrice = await this.helper.getRewardPrice(staking);
         if (staking.type === "lp") {
           const underlying = await this.helper.getLPUnderlyingBalance(staking);
-          const price = await this.helper.getLPStakingPrice(staking);
+          const stakingPrice = await this.helper.getLPStakingPrice(staking);
           return {
             ...staking,
             ...reward,
             ...rewardPrice,
             ...underlying,
-            ...price,
+            ...stakingPrice,
           };
         }
         const price = await this.helper.getSingleStakingPrice(staking);
@@ -121,6 +128,9 @@ export class Masterchef {
   }
 
   async getStakingBalance(poolInfo: PoolInfo, address: string) {
+    if (!poolInfo) {
+      return;
+    }
     const user = await this.masterchef.methods
       .userInfo(poolInfo.poolId, address)
       .call();
