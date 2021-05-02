@@ -11,23 +11,26 @@ export type SinglePoolInfo = {
   type: "single";
 };
 
-export type LPPoolInfo = {
+export type LPPoolInfo = TokenPair & {
   poolId: number;
   lpAddress: string;
   tokenDecimals: number;
-  token0Address: string;
-  token0Symbol: string;
-  token0Decimals: number;
   token0Logo: string;
-  token1Address: string;
-  token1Symbol: string;
-  token1Decimals: number;
   token1Logo: string;
   rewardAddress: string;
   rewardSymbol: string;
   rewardDecimals: number;
   rewardLogo: string;
   type: "lp";
+};
+
+export type TokenPair = {
+  token0Address: string;
+  token0Symbol: string;
+  token0Decimals: number;
+  token1Address: string;
+  token1Symbol: string;
+  token1Decimals: number;
 };
 
 export type PoolInfo = SinglePoolInfo | LPPoolInfo;
@@ -91,11 +94,24 @@ export type Position = {
   totalValue: number;
 };
 
-export type WalletToken = {
-  decimals: number;
-  balance: number;
-  symbol: string;
+export type CoinGeckoResponse = { [key: string]: { usd: number } };
+
+export type StakingResult = {
   name: string;
+  positions: Position[];
+  error?: boolean;
+  message?: string;
+};
+
+export type WalletToken = Token & {
+  id: string;
+  decimals: number;
+  name: string;
+  totalValue?: number;
+};
+
+export type WalletBalance = {
+  walletTokens: WalletToken[];
   totalValue: number;
 };
 

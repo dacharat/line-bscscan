@@ -1,7 +1,10 @@
 import {
+  LPPoolInfo,
   LPStaking,
   PoolInfo,
   Position,
+  RewardBalance,
+  SinglePoolInfo,
   SingleStaking,
   Staking,
   TokenBalance,
@@ -24,7 +27,7 @@ export class Masterchef {
     return this.name;
   };
 
-  getPoolInfos = async () => {
+  getPoolInfos = async (): Promise<(LPPoolInfo | SinglePoolInfo)[]> => {
     const rewardAddress = (
       await this.masterchef.methods[this.name]().call()
     ).toLowerCase();
@@ -36,7 +39,7 @@ export class Masterchef {
       await this.masterchef.methods.poolLength().call()
     );
     const poolIds = [...Array(poolLength).keys()];
-    const poolInfos = await Promise.all<any>(
+    const poolInfos: (LPPoolInfo | SinglePoolInfo)[] = await Promise.all(
       poolIds.map(async (pid: number) => {
         const pool = await this.masterchef.methods.poolInfo(pid).call();
         const lpAddress = pool.lpToken.toLowerCase();
@@ -48,7 +51,7 @@ export class Masterchef {
         }
         try {
           const pair = await this.helper.getTokenPair(lpAddress);
-          const poolInfo = {
+          const poolInfo: LPPoolInfo = {
             poolId: pid,
             lpAddress,
             tokenDecimals,
@@ -69,7 +72,7 @@ export class Masterchef {
           return poolInfo;
         } catch {
           const tokenSymbol = await this.helper.getTokenSymbol(lpAddress);
-          const poolInfo = {
+          const poolInfo: SinglePoolInfo = {
             poolId: pid,
             tokenAddress: lpAddress,
             tokenSymbol,
@@ -88,7 +91,10 @@ export class Masterchef {
     return poolInfos.filter((poolInfo) => !isEmpty(poolInfo));
   };
 
-  async getStaking(poolInfos: PoolInfo[], address: string) {
+  getStaking = async (
+    poolInfos: PoolInfo[],
+    address: string
+  ): Promise<Staking[]> => {
     // 1. Get staking balance
     let stakingBalance: (PoolInfo & TokenBalance)[] = await Promise.all(
       poolInfos.map(async (poolInfo) => {
@@ -124,9 +130,12 @@ export class Masterchef {
     );
 
     return position;
-  }
+  };
 
-  async getStakingBalance(poolInfo: PoolInfo, address: string) {
+  getStakingBalance = async (
+    poolInfo: PoolInfo,
+    address: string
+  ): Promise<TokenBalance> => {
     if (!poolInfo) {
       return;
     }
@@ -137,9 +146,12 @@ export class Masterchef {
       tokenBalance: toDecimal(user.amount, poolInfo.tokenDecimals).toNumber(),
     };
     return staking;
-  }
+  };
 
-  async getStakingReward(poolInfo: PoolInfo, address: string) {
+  getStakingReward = async (
+    poolInfo: PoolInfo,
+    address: string
+  ): Promise<RewardBalance> => {
     const fnName = `pending${this.name[0].toUpperCase() + this.name.slice(1)}`;
     const pendingReward = await this.masterchef.methods[fnName](
       poolInfo.poolId,
@@ -152,18 +164,18 @@ export class Masterchef {
       ).toNumber(),
     };
     return reward;
-  }
+  };
 }
 
-export const getPositions = (staking: Staking) => {
+export const getPositions = (staking: Staking): Position => {
   if (staking.type === "lp") {
     return lpStakingToPosition(staking);
   }
   return singleStakingToPosition(staking);
 };
 
-export const singleStakingToPosition = (staking: SingleStaking) => {
-  const position: Position = {
+export const singleStakingToPosition = (staking: SingleStaking): Position => {
+  return {
     tokens: [
       {
         symbol: staking.tokenSymbol,
@@ -185,11 +197,10 @@ export const singleStakingToPosition = (staking: SingleStaking) => {
       staking.tokenBalance * staking.tokenPrice +
       staking.rewardBalance * staking.rewardPrice,
   };
-  return position;
 };
 
-export const lpStakingToPosition = (staking: LPStaking) => {
-  const position: Position = {
+export const lpStakingToPosition = (staking: LPStaking): Position => {
+  return {
     tokens: [
       {
         symbol: staking.token0Symbol,
@@ -219,5 +230,4 @@ export const lpStakingToPosition = (staking: LPStaking) => {
       staking.token1Balance * staking.token1Price +
       staking.rewardBalance * staking.rewardPrice,
   };
-  return position;
 };

@@ -1,14 +1,15 @@
 import axios from "axios";
 import { tokens } from "../constants/coingecko";
+import { CoinGeckoResponse } from "../types";
 
 export class PriceService {
-  getPrice = async (address: string) => {
+  getPrice = async (address: string): Promise<number> => {
     if (address === process.env.DEFINIX_TOKEN) {
       return this.getFinixPrice();
     }
 
     try {
-      let data = {};
+      let data: CoinGeckoResponse = {};
       let id = "";
       if (address in tokens) {
         id = tokens[address].id;
@@ -21,29 +22,32 @@ export class PriceService {
     } catch (e) {
       console.log("Error getting price", e);
     }
+
     return 0;
   };
-  getPrices = async (ids: string[]) => {
+
+  getPrices = async (ids: string[]): Promise<CoinGeckoResponse> => {
     try {
       const { data } = await axios.get(
         `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(
           ","
         )}&vs_currencies=usd`
       );
-      return data;
+      return data as CoinGeckoResponse;
     } catch (e) {
       console.log("Error getting price", e);
     }
-    return 0;
+
+    return ids.reduce((cur, id) => (cur[id] = { usd: 0 }), {});
   };
 
-  getFinixPrice = async () => {
+  getFinixPrice = async (): Promise<number> => {
     try {
       const { data } = await axios.get(
         `${process.env.DEFINIX_HOST}${process.env.DEFINIX_PRICE_ENDPOINT}`
       );
 
-      return data.price;
+      return data.price || 0;
     } catch (e) {
       console.log("Error getting finix price", e);
     }

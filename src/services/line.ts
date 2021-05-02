@@ -11,15 +11,19 @@ export class LineService {
     })
   ) {}
 
-  replyMessage = async (token: string, message: Message | any) => {
+  replyMessage = async (
+    token: string,
+    message: Message | any
+  ): Promise<void> => {
     this.client.replyMessage(token, message);
   };
 
-  pushMessage = async (data: Message | any) => {
+  pushMessage = async (data: Message | any): Promise<void> => {
     const body = {
       to: process.env.LINE_USER_ID,
       messages: [data],
     };
+
     axios.post(pushUrl, body, {
       headers: {
         Authorization: `Bearer ${ACCRSS_TOKEN}`,

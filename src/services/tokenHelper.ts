@@ -1,4 +1,14 @@
-import { LPPoolInfo, PoolInfo, SinglePoolInfo, TokenBalance } from "../types";
+import {
+  LPBalance,
+  LPPoolInfo,
+  PoolInfo,
+  RewardPrice,
+  SinglePoolInfo,
+  TokenBalance,
+  TokenPair,
+  SinglePrice,
+  LPPrice,
+} from "../types";
 
 import BEP20 from "../abi/BEP20.json";
 import FarmsPair from "../abi/FarmsPair.json";
@@ -13,20 +23,19 @@ export class TokenHelper {
   ) {}
 
   //   BEP20
-  async getTokenSymbol(address: string) {
+  getTokenSymbol = async (address: string): Promise<string> => {
     const tokenContract = this.web3Service.getContract(BEP20.abi, address);
-    const tokenSymbol: string = await tokenContract.methods.symbol().call();
-    return tokenSymbol;
-  }
+    return await tokenContract.methods.symbol().call();
+  };
 
-  async getTokenDecimals(address: string) {
+  getTokenDecimals = async (address: string): Promise<number> => {
     const tokenContract = this.web3Service.getContract(BEP20.abi, address);
     const tokenDecimals = await tokenContract.methods.decimals().call();
     return parseInt(tokenDecimals);
-  }
+  };
 
   //   Pair
-  async getTokenPair(lpAddress: string) {
+  getTokenPair = async (lpAddress: string): Promise<TokenPair> => {
     const lpContract = this.web3Service.getContract(FarmsPair.abi, lpAddress);
     const token0Address = (
       await lpContract.methods.token0().call()
@@ -46,9 +55,11 @@ export class TokenHelper {
       token1Address,
       token1Decimals,
     };
-  }
+  };
 
-  async getLPUnderlyingBalance(poolInfo: LPPoolInfo & TokenBalance) {
+  getLPUnderlyingBalance = async (
+    poolInfo: LPPoolInfo & TokenBalance
+  ): Promise<LPBalance> => {
     const lpContract = this.web3Service.getContract(
       FarmsPair.abi,
       poolInfo.lpAddress
@@ -77,26 +88,28 @@ export class TokenHelper {
       token1Balance,
     };
     return lpInfo;
-  }
+  };
 
   //   Price
-  async getRewardPrice(poolInfo: PoolInfo) {
+  getRewardPrice = async (poolInfo: PoolInfo): Promise<RewardPrice> => {
     const rewardPrice = await this.priceService.getPrice(
       poolInfo.rewardAddress
     );
     return {
       rewardPrice,
     };
-  }
+  };
 
-  async getSingleStakingPrice(poolInfo: SinglePoolInfo) {
+  getSingleStakingPrice = async (
+    poolInfo: SinglePoolInfo
+  ): Promise<SinglePrice> => {
     const tokenPrice = await this.priceService.getPrice(poolInfo.tokenAddress);
     return {
       tokenPrice,
     };
-  }
+  };
 
-  async getLPStakingPrice(poolInfo: LPPoolInfo) {
+  getLPStakingPrice = async (poolInfo: LPPoolInfo): Promise<LPPrice> => {
     let [token0Price, token1Price] = await Promise.all([
       this.priceService.getPrice(poolInfo.token0Address),
       this.priceService.getPrice(poolInfo.token1Address),
@@ -105,5 +118,5 @@ export class TokenHelper {
       token0Price,
       token1Price,
     };
-  }
+  };
 }

@@ -1,46 +1,39 @@
 import "dotenv/config";
+import { get } from "lodash";
+import express from "express";
 
-import { getPositions } from "./services/masterchef";
 import {
   addressBar,
+  errorMessage,
   poolLine,
   summary,
   tableHeader,
   walletLine,
+  separator,
+  errorFlex,
 } from "./views/flexTemplate";
-import { get, sortBy } from "lodash";
 import { isValidAddress, shortenAddress } from "./utils";
+import { StakingResult } from "./types";
 
 import { PriceService } from "./services/priceService";
 import { TokenHelper } from "./services/tokenHelper";
 import { Web3Service } from "./services/web3Service";
 import { LineService } from "./services/line";
-import express from "express";
-import { getAllStaking, getMasterChef } from "./services/defi";
-
-import { pools } from "./constants/pancake/pools";
+import { DeFiService } from "./services/defi";
+import { WalletService } from "./services/wallet";
 
 // Init Express
 const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
 
-// Init LINE SDK
+// Init Service
 const lineService = new LineService();
-
-// Init Masterchef
 const web3Service = new Web3Service();
 const priceService = new PriceService();
 const helper = new TokenHelper(web3Service, priceService);
-
-// Init cake masterchhef
-const cakeMasterchef = getMasterChef(web3Service, helper, "cake");
-
-// Init definix masterchef
-const finixMasterChef = getMasterChef(web3Service, helper, "finix");
-
-// Init panther masterchef
-const pantherMasterchef = getMasterChef(web3Service, helper, "panther");
+const defiService = new DeFiService(web3Service, helper);
+const walletService = new WalletService(web3Service, priceService);
 
 // Webhook;
 app.post("/webhook", async (req, res) => {
@@ -60,33 +53,10 @@ app.post("/webhook", async (req, res) => {
   }
 
   const address = message;
-  const stakings = await cakeMasterchef.getStaking(pools, address);
-  const positions = sortBy(
-    stakings.map((stake) => getPositions(stake)),
-    ["totalValue"]
-  ).reverse();
-  const totalValue = positions.reduce(
-    (sum, position) => sum + position.totalValue,
-    0
-  );
 
-  await lineService.replyMessage(replyToken, {
-    type: "flex",
-    altText: "Pancake Staking",
-    contents: {
-      type: "bubble",
-      body: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          addressBar(shortenAddress(address)),
-          tableHeader("Pool"),
-          ...positions.map((position) => poolLine(position)),
-          summary(totalValue),
-        ],
-      },
-    },
-  });
+  const data = await buildFlexTemplate(address);
+
+  await lineService.replyMessage(replyToken, data);
 
   return res.sendStatus(200);
 });
@@ -94,53 +64,73 @@ app.post("/webhook", async (req, res) => {
 app.get("/test/:id", async (req, res) => {
   const address = req.params.id;
 
-  const allPositions = await getAllStaking(
-    address,
-    cakeMasterchef,
-    finixMasterChef,
-    pantherMasterchef
-  );
-
-  const walletTokens = await web3Service.getWalletBalance(address);
-
-  const totalPositionValue = allPositions?.reduce(
-    (sum, positions) =>
-      sum + positions.reduce((s, position) => s + position.totalValue, 0),
-    0
-  );
-  const totalValue =
-    totalPositionValue +
-    walletTokens.reduce((sum, token) => sum + token.totalValue, 0);
-
-  const data = {
-    type: "flex",
-    altText: "Your BSC asset!!",
-    contents: {
-      type: "bubble",
-      body: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          addressBar(shortenAddress(address)),
-          tableHeader("Wallet"),
-          ...walletTokens.map(walletLine),
-          tableHeader("Pool"),
-          ...allPositions
-            .map((positions) => {
-              const p = positions.map((position) => poolLine(position));
-              return p;
-            })
-            .flat(),
-          summary(totalValue),
-        ],
-      },
-    },
-  };
+  const data = await buildFlexTemplate(address);
 
   lineService.pushMessage(data);
 
-  res.status(200).send({});
+  res.status(200).send({ message: "succeess" });
 });
+
+const buildFlexTemplate = async (address: string) => {
+  try {
+    const allStaking = await defiService.getAllStaking(address);
+
+    const totalPositionValue = allStaking?.reduce(
+      (sum, staking) =>
+        sum +
+        (!staking.error
+          ? staking.positions.reduce(
+              (s, position) => s + position.totalValue,
+              0
+            )
+          : sum),
+      0
+    );
+
+    const walletTokens = await walletService.getWalletBalance(address);
+
+    const totalValue =
+      totalPositionValue +
+      walletTokens.reduce((sum, token) => sum + token?.totalValue, 0);
+
+    return {
+      type: "flex",
+      altText: "Your BSC asset!!",
+      contents: {
+        type: "bubble",
+        body: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            addressBar(shortenAddress(address)),
+            tableHeader("Wallet"),
+            ...walletTokens.map(walletLine),
+            separator(),
+            ...generateFlex(allStaking).flat(),
+            summary(totalValue),
+          ],
+        },
+      },
+    };
+  } catch (e) {
+    return errorFlex(address);
+  }
+};
+
+const generateFlex = (staking: StakingResult[]) => {
+  return staking.map((s) => {
+    if (s.error) {
+      return [tableHeader(s.name), errorMessage(s.message)];
+    }
+    if (s.positions.length === 0) {
+      return [];
+    }
+    return [
+      tableHeader(s.name),
+      ...s.positions.map((position) => poolLine(position)),
+    ];
+  });
+};
 
 app.listen(port, () => {
   console.log(`Server is running at https://localhost:${port}`);
@@ -148,10 +138,12 @@ app.listen(port, () => {
 
 // const test = async () => {
 //   const address = "0x7b77C877B4396d707159baf62af3E667B4e845b6";
-//   // const s = await web3Service.getWalletBalance(address);
-//   const stakings = await finixMasterChef.getStaking(finixPools, address);
+//   const s = await web3Service.getWalletBalance(address);
+//   // const stakings = await finixMasterChef.getStaking(finixPools, address);
+//   const a = await web3Service.web3.eth.getAccounts();
 
-//   console.log(stakings);
+//   console.log(s);
+//   console.log(a);
 // };
 
 // test().then((_) => console.log("done"));
