@@ -93,8 +93,18 @@ export type Position = {
 
 export type WalletToken = {
   decimals: number;
-  balance: number | string;
+  balance: number;
   symbol: string;
   name: string;
-  totalPrice: number;
+  totalValue: number;
+};
+
+export type IDefiValue = {
+  address: string;
+  abi: object;
+  pools: PoolInfo[];
+};
+
+export type IDefi = {
+  [key: string]: IDefiValue;
 };

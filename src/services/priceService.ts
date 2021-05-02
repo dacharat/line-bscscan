@@ -3,6 +3,10 @@ import { tokens } from "../constants/coingecko";
 
 export class PriceService {
   getPrice = async (address: string) => {
+    if (address === process.env.DEFINIX_TOKEN) {
+      return this.getFinixPrice();
+    }
+
     try {
       let data = {};
       let id = "";
@@ -29,6 +33,19 @@ export class PriceService {
       return data;
     } catch (e) {
       console.log("Error getting price", e);
+    }
+    return 0;
+  };
+
+  getFinixPrice = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.DEFINIX_HOST}${process.env.DEFINIX_PRICE_ENDPOINT}`
+      );
+
+      return data.price;
+    } catch (e) {
+      console.log("Error getting finix price", e);
     }
     return 0;
   };

@@ -1,4 +1,4 @@
-import { PoolInfo } from "../types";
+import { PoolInfo } from "../../types";
 
 export const pools: PoolInfo[] = [
   {

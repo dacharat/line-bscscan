@@ -13,7 +13,7 @@ export const addressBar = (address: string) => ({
 export const tableHeader = (header: string) => ({
   type: "box",
   layout: "horizontal",
-  paddingTop: "4%",
+  paddingTop: "8px",
   contents: [
     {
       type: "text",
@@ -42,7 +42,7 @@ export const separator = () => ({
 export const summary = (totalValue: number) => ({
   type: "box",
   layout: "horizontal",
-  paddingTop: "4%",
+  paddingTop: "8px",
   contents: [
     {
       type: "text",
@@ -70,8 +70,8 @@ export const poolLine = (position: Position) => ({
     {
       type: "box",
       layout: "horizontal",
-      paddingTop: "4%",
-      paddingBottom: "4%",
+      paddingTop: "8px",
+      paddingBottom: "8px",
       contents: [
         {
           type: "box",
@@ -82,7 +82,7 @@ export const poolLine = (position: Position) => ({
             {
               type: "box",
               layout: "horizontal",
-              paddingBottom: "2%",
+              paddingBottom: "4px",
               contents: [
                 {
                   type: "box",
@@ -109,7 +109,7 @@ export const poolLine = (position: Position) => ({
             {
               type: "box",
               layout: "horizontal",
-              paddingBottom: "2%",
+              paddingBottom: "4px",
               contents: [
                 {
                   type: "text",
@@ -172,8 +172,8 @@ export const walletLine = (wallet: WalletToken) => ({
     {
       type: "box",
       layout: "horizontal",
-      paddingTop: "4%",
-      paddingBottom: "4%",
+      paddingTop: "8px",
+      paddingBottom: "8px",
       contents: [
         {
           type: "box",
@@ -184,7 +184,7 @@ export const walletLine = (wallet: WalletToken) => ({
             {
               type: "box",
               layout: "horizontal",
-              paddingBottom: "2%",
+              paddingBottom: "4px",
               contents: [
                 {
                   type: "box",
@@ -213,11 +213,11 @@ export const walletLine = (wallet: WalletToken) => ({
             {
               type: "box",
               layout: "horizontal",
-              paddingBottom: "2%",
+              paddingBottom: "4px",
               contents: [
                 {
                   type: "text",
-                  text: `${wallet.balance} ${wallet.symbol}`,
+                  text: `${formatNumber(wallet.balance)} ${wallet.symbol}`,
                   size: "xs",
                   align: "start",
                   gravity: "center",
@@ -235,7 +235,7 @@ export const walletLine = (wallet: WalletToken) => ({
           contents: [
             {
               type: "text",
-              text: `$${formatNumber(wallet.totalPrice)}`,
+              text: `$${formatNumber(wallet.totalValue)}`,
               size: "xs",
               align: "end",
               offsetTop: "6%",

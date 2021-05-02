@@ -1,7 +1,7 @@
 import { LPPoolInfo, PoolInfo, SinglePoolInfo, TokenBalance } from "../types";
 
 import BEP20 from "../abi/BEP20.json";
-import PancakePair from "../abi/PancakePair.json";
+import FarmsPair from "../abi/FarmsPair.json";
 import { PriceService } from "./priceService";
 import { Web3Service } from "./web3Service";
 import { toDecimal } from "../utils";
@@ -27,7 +27,7 @@ export class TokenHelper {
 
   //   Pair
   async getTokenPair(lpAddress: string) {
-    const lpContract = this.web3Service.getContract(PancakePair.abi, lpAddress);
+    const lpContract = this.web3Service.getContract(FarmsPair.abi, lpAddress);
     const token0Address = (
       await lpContract.methods.token0().call()
     ).toLowerCase();
@@ -50,7 +50,7 @@ export class TokenHelper {
 
   async getLPUnderlyingBalance(poolInfo: LPPoolInfo & TokenBalance) {
     const lpContract = this.web3Service.getContract(
-      PancakePair.abi,
+      FarmsPair.abi,
       poolInfo.lpAddress
     );
     const totalSupply = toDecimal(

@@ -13,17 +13,20 @@ import { getTokenData } from "../constants/coingecko";
 import { isEmpty } from "lodash";
 import { toDecimal } from "../utils";
 
-// import fs from "fs";
-
 export class Masterchef {
   constructor(
+    private readonly name: string,
     private readonly masterchef: Contract,
     private readonly helper: TokenHelper
   ) {}
 
+  getName = (): string => {
+    return this.name;
+  };
+
   getPoolInfos = async () => {
     const rewardAddress = (
-      await this.masterchef.methods.cake().call()
+      await this.masterchef.methods[this.name]().call()
     ).toLowerCase();
 
     const rewardSymbol = await this.helper.getTokenSymbol(rewardAddress);
@@ -82,10 +85,6 @@ export class Masterchef {
         }
       })
     );
-    // fs.writeFileSync(
-    //   "/Users/jack/MyDocument/WebDevloper/crypto/line-pancakeswap/test.txt",
-    //   JSON.stringify(poolInfos)
-    // );
     return poolInfos.filter((poolInfo) => !isEmpty(poolInfo));
   };
 
@@ -141,9 +140,11 @@ export class Masterchef {
   }
 
   async getStakingReward(poolInfo: PoolInfo, address: string) {
-    const pendingReward = await this.masterchef.methods
-      .pendingCake(poolInfo.poolId, address)
-      .call();
+    const fnName = `pending${this.name[0].toUpperCase() + this.name.slice(1)}`;
+    const pendingReward = await this.masterchef.methods[fnName](
+      poolInfo.poolId,
+      address
+    ).call();
     const reward = {
       rewardBalance: toDecimal(
         pendingReward,

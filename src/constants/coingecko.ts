@@ -8594,6 +8594,26 @@ export const tokens: Record<string, Token> = {
     decimals: 18,
     address: "0x42712df5009c20fee340b245b510c0395896cf6e",
   },
+  "0x1f546ad641b56b86fd9dceac473d1c7a357276b7": {
+    id: "pantherswap",
+    symbol: "panther",
+    name: "PantherSwap",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo:
+      "https://assets.coingecko.com/coins/images/15130/small/panther.PNG?1619764096",
+    decimals: 18,
+    address: "0x1f546ad641b56b86fd9dceac473d1c7a357276b7",
+  },
+  "0x070a9867ea49ce7afc4505817204860e823489fe": {
+    id: "six-network",
+    symbol: "six",
+    name: "SIX Network",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo:
+      "https://assets.coingecko.com/coins/images/15130/small/panther.PNG?1619764096",
+    decimals: 18,
+    address: "0x070a9867ea49ce7afc4505817204860e823489fe",
+  },
 };
 
 export const getTokenData = (address: string) => tokens[address];

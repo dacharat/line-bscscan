@@ -1,6 +1,6 @@
 import Web3 from "web3";
 
-import Safemoon from "../abi/safemoon/abi.json";
+import Bep20 from "../abi/BEP20.json";
 import { WalletToken } from "../types";
 import { PriceService } from "./priceService";
 import { toDecimal } from "../utils";
@@ -32,7 +32,7 @@ export class Web3Service {
   getSafemoonBalance: (address: string) => Promise<WalletToken> = async (
     address
   ) => {
-    const abi = Safemoon.abi as any;
+    const abi = Bep20.abi as any;
     const contract = new this.web3.eth.Contract(
       abi,
       "0x8076C74C5e3F5852037F31Ff0093Eeb8c8ADd8D3"
@@ -56,7 +56,7 @@ export class Web3Service {
     return {
       ...o,
       balance: formatedBalance,
-      totalPrice: formatedBalance * data.safemoon.usd,
+      totalValue: formatedBalance * data.safemoon.usd,
     };
   };
 
@@ -73,7 +73,7 @@ export class Web3Service {
         decimals: 18,
         symbol: "BNB",
         name: "binancecoin",
-        totalPrice:
+        totalValue:
           parseFloat(formatedBalance.toString()) * data.binancecoin.usd,
       })
     );

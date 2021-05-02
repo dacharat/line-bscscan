@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { Masterchef, getPositions } from "./services/masterchef";
+import { getPositions } from "./services/masterchef";
 import {
   addressBar,
   poolLine,
@@ -11,36 +11,38 @@ import {
 import { get, sortBy } from "lodash";
 import { isValidAddress, shortenAddress } from "./utils";
 
-import { Client } from "@line/bot-sdk";
-import MasterChef from "./abi/MasterChef.json";
 import { PriceService } from "./services/priceService";
 import { TokenHelper } from "./services/tokenHelper";
 import { Web3Service } from "./services/web3Service";
+import { LineService } from "./services/line";
 import express from "express";
-import { pools } from "./constants/pools";
-import axios from "axios";
+import { getAllStaking, getMasterChef } from "./services/defi";
+
+import { pools } from "./constants/pancake/pools";
 
 // Init Express
 const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
 
-console.log("==========> ", process.env.LINE_CHANNEL_ACCESS_TOKEN);
-const ACCRSS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 // Init LINE SDK
-const lineClient = new Client({
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
-});
+const lineService = new LineService();
 
 // Init Masterchef
 const web3Service = new Web3Service();
 const priceService = new PriceService();
-const masterchefAddress = "0x73feaa1eE314F8c655E354234017bE2193C9E24E";
-const contract = web3Service.getContract(MasterChef.abi, masterchefAddress);
 const helper = new TokenHelper(web3Service, priceService);
-const masterchef = new Masterchef(contract, helper);
 
-// Webhook
+// Init cake masterchhef
+const cakeMasterchef = getMasterChef(web3Service, helper, "cake");
+
+// Init definix masterchef
+const finixMasterChef = getMasterChef(web3Service, helper, "finix");
+
+// Init panther masterchef
+const pantherMasterchef = getMasterChef(web3Service, helper, "panther");
+
+// Webhook;
 app.post("/webhook", async (req, res) => {
   const event = get(req, ["body", "events", "0"]);
   const eventType = get(event, ["message", "type"]);
@@ -49,19 +51,16 @@ app.post("/webhook", async (req, res) => {
 
   // Validate input message
   if (eventType !== "text" || !isValidAddress(message)) {
-    await lineClient.replyMessage(replyToken, {
+    await lineService.replyMessage(replyToken, {
       type: "text",
       text:
         "Please input valid BSC address. For example, 0x3c74c735b5863c0baf52598d8fd2d59611c8320f 🐳",
-    } as any);
+    });
     return res.sendStatus(200);
   }
 
-  // Get poolInfos and store it to fetch faster
-  // const pools = await masterchef.getPoolInfos();
-
   const address = message;
-  const stakings = await masterchef.getStaking(pools, address);
+  const stakings = await cakeMasterchef.getStaking(pools, address);
   const positions = sortBy(
     stakings.map((stake) => getPositions(stake)),
     ["totalValue"]
@@ -71,7 +70,7 @@ app.post("/webhook", async (req, res) => {
     0
   );
 
-  await lineClient.replyMessage(replyToken, {
+  await lineService.replyMessage(replyToken, {
     type: "flex",
     altText: "Pancake Staking",
     contents: {
@@ -87,27 +86,35 @@ app.post("/webhook", async (req, res) => {
         ],
       },
     },
-  } as any);
+  });
+
   return res.sendStatus(200);
 });
 
 app.get("/test/:id", async (req, res) => {
   const address = req.params.id;
-  const stakings = await masterchef.getStaking(pools, address);
-  const positions = sortBy(
-    stakings.map((stake) => getPositions(stake)),
-    ["totalValue"]
-  ).reverse();
+
+  const allPositions = await getAllStaking(
+    address,
+    cakeMasterchef,
+    finixMasterChef,
+    pantherMasterchef
+  );
 
   const walletTokens = await web3Service.getWalletBalance(address);
 
+  const totalPositionValue = allPositions?.reduce(
+    (sum, positions) =>
+      sum + positions.reduce((s, position) => s + position.totalValue, 0),
+    0
+  );
   const totalValue =
-    positions.reduce((sum, position) => sum + position.totalValue, 0) +
-    walletTokens.reduce((sum, token) => sum + token.totalPrice, 0);
+    totalPositionValue +
+    walletTokens.reduce((sum, token) => sum + token.totalValue, 0);
 
   const data = {
     type: "flex",
-    altText: "Pancake Staking",
+    altText: "Your BSC asset!!",
     contents: {
       type: "bubble",
       body: {
@@ -118,27 +125,21 @@ app.get("/test/:id", async (req, res) => {
           tableHeader("Wallet"),
           ...walletTokens.map(walletLine),
           tableHeader("Pool"),
-          ...positions.map((position) => poolLine(position)),
+          ...allPositions
+            .map((positions) => {
+              const p = positions.map((position) => poolLine(position));
+              return p;
+            })
+            .flat(),
           summary(totalValue),
         ],
       },
     },
   };
 
-  const body = {
-    to: process.env.LINE_USER_ID,
-    messages: [data],
-  };
+  lineService.pushMessage(data);
 
-  const URL = "https://api.line.me/v2/bot/message/push";
-
-  axios.post(URL, body, {
-    headers: {
-      Authorization: `Bearer ${ACCRSS_TOKEN}`,
-    },
-  });
-
-  res.status(200).send({ data });
+  res.status(200).send({});
 });
 
 app.listen(port, () => {
@@ -146,15 +147,11 @@ app.listen(port, () => {
 });
 
 // const test = async () => {
-//   const address = "0x8076C74C5e3F5852037F31Ff0093Eeb8c8ADd8D3";
-//   const s = await web3Service.getWalletBalance(address);
-//   // try {
-//   //   const poolsFetch = await masterchef.getPoolInfos();
-//   //   console.log(poolsFetch);
-//   // } catch (e) {
-//   //   console.log(e);
-//   // }
-//   console.log(s);
+//   const address = "0x7b77C877B4396d707159baf62af3E667B4e845b6";
+//   // const s = await web3Service.getWalletBalance(address);
+//   const stakings = await finixMasterChef.getStaking(finixPools, address);
+
+//   console.log(stakings);
 // };
 
 // test().then((_) => console.log("done"));
