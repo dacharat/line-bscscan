@@ -12,6 +12,8 @@ export type Token = {
   name: string;
   symbol: string;
   logo?: string;
+
+  lpPair?: string; // TOKEN-BUSD pair address use to get price from the token that doesn't list in coingecko
 };
 
 export const tokens: Record<string, Token> = {
@@ -260,8 +262,7 @@ export const tokens: Record<string, Token> = {
     symbol: "cake",
     name: "PancakeSwap",
     platform: Platform.BINANCE_SMART_CHAIN,
-    logo:
-      "https://assets.coingecko.com/coins/images/12632/large/IMG_0440.PNG?1602654093",
+    logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png",
     decimals: 18,
     address: "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
   },
@@ -1656,6 +1657,7 @@ export const tokens: Record<string, Token> = {
       "https://firebasestorage.googleapis.com/v0/b/ape-board-prod.appspot.com/o/logo%2Fwarden.png?alt=media&token=d722d16b-c622-46d6-ab01-17f22a66402e",
     decimals: 18,
     address: "0x0feadcc3824e7f3c12f40e324a60c23ca51627fc",
+    lpPair: "0xc95b1750043fce5dfcc8539835ea3830ec002a89",
   },
   "0xa7f552078dcc247c2684336020c03648500c6d9f": {
     id: "ellipsis",
@@ -2250,6 +2252,7 @@ export const tokens: Record<string, Token> = {
     logo: "https://bsc.definix.com/images/coins/finix.png",
     decimals: 18,
     address: "0x0f02b1f5af54e04fb6dd6550f009ac2429c4e30d",
+    lpPair: "0x9d19afdc03a710cf54f6b3d3764c7d3b26ac892f",
   },
   "0x8076C74C5e3F5852037F31Ff0093Eeb8c8ADd8D3": {
     id: "safemoon",

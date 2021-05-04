@@ -26,6 +26,6 @@ export const writeFile = (name: string, data: string) => {
   fs.writeFileSync(`${process.env.OUTPUT_PATH}/token-${name}.txt`, data);
 };
 
-// getPoolInfos("panther")
+// getPoolInfos("warden")
 //   .then(() => console.log("success"))
 //   .catch((e) => console.log(e));

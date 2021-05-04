@@ -1,11 +1,20 @@
-import { Position, WalletToken } from "../types";
+import { Position, StakingResult, WalletToken } from "../types";
 import { formatNumber } from "../utils";
+
+const COLOR = {
+  title: "#CCCCCC",
+  header: "#436AA9",
+  detail: "#f5f7f8",
+  error: "#FF0000",
+  summary: "#e9edf0",
+  separator: "#485869",
+};
 
 export const addressBar = (address: string) => ({
   type: "text",
   text: `Address: ${address}`,
   size: "xs",
-  color: "#AAAAAA",
+  color: COLOR.title,
   contents: [],
 });
 
@@ -13,7 +22,7 @@ export const errorMessage = (message: string) => ({
   type: "text",
   text: message,
   size: "xs",
-  color: "#AAAAAA",
+  color: COLOR.title,
   contents: [],
 });
 
@@ -26,7 +35,7 @@ export const tableHeader = (header: string) => ({
       type: "text",
       text: header,
       weight: "bold",
-      color: "#7645D9",
+      color: COLOR.header,
       align: "start",
       contents: [],
     },
@@ -34,7 +43,7 @@ export const tableHeader = (header: string) => ({
       type: "text",
       text: "Value",
       weight: "bold",
-      color: "#7645D9",
+      color: COLOR.header,
       align: "end",
       offsetEnd: "6%",
       contents: [],
@@ -44,6 +53,8 @@ export const tableHeader = (header: string) => ({
 
 export const separator = () => ({
   type: "separator",
+  color: COLOR.separator,
+  margin: "8px",
 });
 
 export const summary = (totalValue: number) => ({
@@ -54,118 +65,25 @@ export const summary = (totalValue: number) => ({
     {
       type: "text",
       text: "Total",
+      flex: 4,
       weight: "bold",
-      color: "#452A7AFF",
+      size: "lg",
+      color: COLOR.summary,
       align: "start",
       contents: [],
     },
     {
       type: "text",
       text: `$${formatNumber(totalValue)}`,
+      flex: 8,
       weight: "bold",
-      color: "#452A7A",
+      size: "lg",
+      color: COLOR.summary,
       align: "end",
       contents: [],
     },
   ],
 });
-
-// export const poolLine = (position: Position) => {
-//   return line(position);
-// };
-
-// export const walletLine = (wallet: WalletToken) => {
-//   return line({
-//     tokens: [wallet],
-//     totalValue: wallet.totalValue || 0,
-//   });
-// };
-
-// const line = ({ tokens, totalValue }: ILine) => ({
-//   type: "box",
-//   layout: "vertical",
-//   contents: [
-//     {
-//       type: "box",
-//       layout: "horizontal",
-//       paddingTop: "8px",
-//       paddingBottom: "8px",
-//       contents: [
-//         {
-//           type: "box",
-//           layout: "vertical",
-//           flex: 8,
-//           backgroundColor: "#FFFFFF00",
-//           contents:
-//             tokens.length === 1 ? singleToken(tokens[0]) : lpToken(tokens),
-//         },
-//         {
-//           type: "box",
-//           layout: "vertical",
-//           flex: 4,
-//           backgroundColor: "#FFFFFFFF",
-//           contents: [
-//             {
-//               type: "text",
-//               text: `$${formatNumber(totalValue)}`,
-//               size: "xs",
-//               align: "end",
-//               offsetTop: "6%",
-//               contents: [],
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//   ],
-// });
-
-// const singleToken = (token: Token) => [
-//   {
-//     type: "box",
-//     layout: "horizontal",
-//     paddingBottom: "4px",
-//     contents: [
-//       {
-//         type: "box",
-//         layout: "horizontal",
-//         width: "60px",
-//         contents: [
-//           {
-//             type: "image",
-//             url: token.logo,
-//             size: "30%",
-//           },
-//         ],
-//       },
-//       {
-//         type: "text",
-//         text: `${formatNumber(token.balance)} ${token.symbol.toUpperCase()}`,
-//         weight: "regular",
-//         size: "sm",
-//         align: "start",
-//         gravity: "center",
-//         offsetStart: "24%",
-//         contents: [],
-//       },
-//     ],
-//   },
-//   // {
-//   //   type: "box",
-//   //   layout: "horizontal",
-//   //   paddingBottom: "4px",
-//   //   contents: [
-//   //     {
-//   //       type: "text",
-//   //       text: `${formatNumber(token.balance)} ${token.symbol.toUpperCase()}`,
-//   //       size: "xs",
-//   //       align: "start",
-//   //       gravity: "center",
-//   //       contents: [],
-//   //     },
-//   //   ],
-//   // },
-// ];
 
 export const poolLine = (position: Position) => ({
   type: "box",
@@ -181,7 +99,6 @@ export const poolLine = (position: Position) => ({
           type: "box",
           layout: "vertical",
           flex: 8,
-          backgroundColor: "#FFFFFF00",
           contents: [
             {
               type: "box",
@@ -206,6 +123,7 @@ export const poolLine = (position: Position) => ({
                   align: "start",
                   gravity: "center",
                   offsetStart: "24%",
+                  color: COLOR.detail,
                   contents: [],
                 },
               ],
@@ -226,6 +144,7 @@ export const poolLine = (position: Position) => ({
                   size: "xs",
                   align: "start",
                   gravity: "center",
+                  color: COLOR.detail,
                   contents: [],
                 },
               ],
@@ -242,6 +161,7 @@ export const poolLine = (position: Position) => ({
                   size: "xs",
                   align: "start",
                   gravity: "center",
+                  color: COLOR.detail,
                   contents: [],
                 },
               ],
@@ -252,7 +172,6 @@ export const poolLine = (position: Position) => ({
           type: "box",
           layout: "vertical",
           flex: 4,
-          backgroundColor: "#FFFFFFFF",
           contents: [
             {
               type: "text",
@@ -260,6 +179,7 @@ export const poolLine = (position: Position) => ({
               size: "xs",
               align: "end",
               offsetTop: "6%",
+              color: COLOR.detail,
               contents: [],
             },
           ],
@@ -284,7 +204,6 @@ export const walletLine = (wallet: WalletToken) => ({
           layout: "horizontal",
           flex: 8,
           paddingBottom: "4px",
-          backgroundColor: "#FFFFFF00",
           contents: [
             {
               type: "box",
@@ -308,6 +227,7 @@ export const walletLine = (wallet: WalletToken) => ({
               align: "start",
               gravity: "center",
               offsetStart: "24%",
+              color: COLOR.detail,
               contents: [],
             },
           ],
@@ -316,7 +236,6 @@ export const walletLine = (wallet: WalletToken) => ({
           type: "box",
           layout: "vertical",
           flex: 4,
-          backgroundColor: "#FFFFFFFF",
           contents: [
             {
               type: "text",
@@ -324,6 +243,7 @@ export const walletLine = (wallet: WalletToken) => ({
               size: "xs",
               align: "end",
               offsetTop: "6%",
+              color: COLOR.detail,
               contents: [],
             },
           ],
@@ -331,6 +251,16 @@ export const walletLine = (wallet: WalletToken) => ({
       ],
     },
   ],
+});
+
+export const subTotal = (value: number) => ({
+  type: "text",
+  text: `$${formatNumber(value)}`,
+  size: "sm",
+  align: "end",
+  weight: "bold",
+  color: COLOR.detail,
+  contents: [],
 });
 
 export const errorFlex = (pushbackMessage: string) => ({
@@ -346,18 +276,35 @@ export const errorFlex = (pushbackMessage: string) => ({
           type: "text",
           text: "Unable to fetch your assets",
           size: "md",
-          color: "#ff0000",
+          color: COLOR.error,
         },
         {
           type: "button",
           style: "link",
           action: {
-            type: "postback",
+            type: "message",
             label: "Try again",
-            data: `message=${pushbackMessage}`,
+            text: pushbackMessage,
           },
         },
       ],
     },
   },
 });
+
+export const generateFlex = (staking: StakingResult[]) => {
+  return staking.map((s) => {
+    if (s.error) {
+      return [tableHeader(s.name), errorMessage(s.message)];
+    }
+    if (s.positions.length === 0) {
+      return [];
+    }
+    return [
+      tableHeader(s.name),
+      ...s.positions.map((position) => poolLine(position)),
+      subTotal(s.totalValue),
+      separator(),
+    ];
+  });
+};

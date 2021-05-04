@@ -99,6 +99,7 @@ export type CoinGeckoResponse = { [key: string]: { usd: number } };
 export type StakingResult = {
   name: string;
   positions: Position[];
+  totalValue: number;
   error?: boolean;
   message?: string;
 };

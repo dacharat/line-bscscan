@@ -4,16 +4,15 @@ import express from "express";
 
 import {
   addressBar,
-  errorMessage,
-  poolLine,
   summary,
   tableHeader,
   walletLine,
   separator,
   errorFlex,
+  generateFlex,
+  subTotal,
 } from "./views/flexTemplate";
 import { isValidAddress, shortenAddress } from "./utils";
-import { StakingResult } from "./types";
 
 import { PriceService } from "./services/priceService";
 import { TokenHelper } from "./services/tokenHelper";
@@ -33,7 +32,7 @@ const web3Service = new Web3Service();
 const priceService = new PriceService();
 const helper = new TokenHelper(web3Service, priceService);
 const defiService = new DeFiService(web3Service, helper);
-const walletService = new WalletService(web3Service, priceService);
+const walletService = new WalletService(web3Service, helper);
 
 // Webhook;
 app.post("/webhook", async (req, res) => {
@@ -76,22 +75,17 @@ const buildFlexTemplate = async (address: string) => {
     const allStaking = await defiService.getAllStaking(address);
 
     const totalPositionValue = allStaking?.reduce(
-      (sum, staking) =>
-        sum +
-        (!staking.error
-          ? staking.positions.reduce(
-              (s, position) => s + position.totalValue,
-              0
-            )
-          : sum),
+      (sum, staking) => sum + staking.totalValue,
       0
     );
 
     const walletTokens = await walletService.getWalletBalance(address);
+    const walletTotal = walletTokens.reduce(
+      (sum, token) => sum + token?.totalValue,
+      0
+    );
 
-    const totalValue =
-      totalPositionValue +
-      walletTokens.reduce((sum, token) => sum + token?.totalValue, 0);
+    const totalValue = totalPositionValue + walletTotal;
 
     return {
       type: "flex",
@@ -105,31 +99,24 @@ const buildFlexTemplate = async (address: string) => {
             addressBar(shortenAddress(address)),
             tableHeader("Wallet"),
             ...walletTokens.map(walletLine),
+            subTotal(walletTotal),
             separator(),
             ...generateFlex(allStaking).flat(),
             summary(totalValue),
           ],
+          background: {
+            type: "linearGradient",
+            angle: "90deg",
+            startColor: "#29323c",
+            endColor: "#37434f",
+          },
         },
       },
     };
   } catch (e) {
+    console.log(`buildFlexTemplate: ${e}`);
     return errorFlex(address);
   }
-};
-
-const generateFlex = (staking: StakingResult[]) => {
-  return staking.map((s) => {
-    if (s.error) {
-      return [tableHeader(s.name), errorMessage(s.message)];
-    }
-    if (s.positions.length === 0) {
-      return [];
-    }
-    return [
-      tableHeader(s.name),
-      ...s.positions.map((position) => poolLine(position)),
-    ];
-  });
 };
 
 app.listen(port, () => {

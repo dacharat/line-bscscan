@@ -8,6 +8,8 @@ import {
   TokenPair,
   SinglePrice,
   LPPrice,
+  WalletToken,
+  CoinGeckoResponse,
 } from "../types";
 
 import BEP20 from "../abi/BEP20.json";
@@ -15,6 +17,10 @@ import FarmsPair from "../abi/FarmsPair.json";
 import { PriceService } from "./priceService";
 import { Web3Service } from "./web3Service";
 import { toDecimal } from "../utils";
+import { getTokenData } from "../constants/coingecko";
+import { lpTokenWhiteList } from "../constants/whitelist";
+
+import { partition } from "lodash";
 
 export class TokenHelper {
   constructor(
@@ -80,21 +86,18 @@ export class TokenHelper {
     const share = poolInfo.tokenBalance / totalSupply;
     const token0Balance = share * reserve0;
     const token1Balance = share * reserve1;
-    const lpInfo = {
+    return {
       totalSupply,
       reserve0,
       reserve1,
       token0Balance,
       token1Balance,
     };
-    return lpInfo;
   };
 
   //   Price
   getRewardPrice = async (poolInfo: PoolInfo): Promise<RewardPrice> => {
-    const rewardPrice = await this.priceService.getPrice(
-      poolInfo.rewardAddress
-    );
+    const rewardPrice = await this.getPrice(poolInfo.rewardAddress);
     return {
       rewardPrice,
     };
@@ -103,7 +106,7 @@ export class TokenHelper {
   getSingleStakingPrice = async (
     poolInfo: SinglePoolInfo
   ): Promise<SinglePrice> => {
-    const tokenPrice = await this.priceService.getPrice(poolInfo.tokenAddress);
+    const tokenPrice = await this.getPrice(poolInfo.tokenAddress);
     return {
       tokenPrice,
     };
@@ -111,12 +114,56 @@ export class TokenHelper {
 
   getLPStakingPrice = async (poolInfo: LPPoolInfo): Promise<LPPrice> => {
     let [token0Price, token1Price] = await Promise.all([
-      this.priceService.getPrice(poolInfo.token0Address),
-      this.priceService.getPrice(poolInfo.token1Address),
+      this.getPrice(poolInfo.token0Address),
+      this.getPrice(poolInfo.token1Address),
     ]);
     return {
       token0Price,
       token1Price,
     };
+  };
+
+  #getPriceFromFarmsPair = async (address: string): Promise<number> => {
+    const lpAddress = getTokenData(address)?.lpPair;
+    if (!lpAddress) {
+      return 0;
+    }
+
+    const lpContract = this.web3Service.getContract(FarmsPair.abi, lpAddress);
+
+    const reserve = await lpContract.methods.getReserves().call();
+
+    return reserve._reserve1 / reserve._reserve0;
+  };
+
+  getPrice = async (address: string): Promise<number> => {
+    if (lpTokenWhiteList.includes(address)) {
+      return this.#getPriceFromFarmsPair(address);
+    }
+    return this.priceService.getPrice(address);
+  };
+
+  getPrices = async (walletToken: WalletToken[]) => {
+    const [coingeckoListed, coingeckoUnlisted] = partition(
+      walletToken,
+      (w) => !lpTokenWhiteList.includes(w.address)
+    );
+    const coingeckoPrices = await this.priceService.getPrices(
+      coingeckoListed.map((p) => p.id)
+    );
+
+    const farmsPairPrices = await Promise.all(
+      coingeckoUnlisted.map(async (r) => ({
+        key: r.id,
+        value: { usd: await this.#getPriceFromFarmsPair(r.address) },
+      }))
+    );
+
+    const prices: CoinGeckoResponse = farmsPairPrices.reduce((cur, id) => {
+      cur[id.key] = id.value;
+      return cur;
+    }, {});
+
+    return { ...coingeckoPrices, ...prices };
   };
 }

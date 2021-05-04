@@ -1,11 +1,11 @@
-import { toDecimal } from "../utils";
-import { PriceService } from "./priceService";
+import { rejectAfterDelay, toDecimal } from "../utils";
 import { Web3Service } from "./web3Service";
 import { WalletToken } from "../types";
 import { getTokenData } from "../constants/coingecko";
 import Bep20 from "../abi/BEP20.json";
 import { whitelist } from "../constants/whitelist";
 import { sortBy } from "lodash";
+import { TokenHelper } from "./tokenHelper";
 
 export class WalletService {
   private readonly abi: object;
@@ -13,7 +13,7 @@ export class WalletService {
 
   constructor(
     private readonly web3Service: Web3Service,
-    private readonly priceService: PriceService
+    private readonly tokenHelper: TokenHelper
   ) {
     this.abi = Bep20.abi;
     this.whitelist = whitelist;
@@ -74,10 +74,14 @@ export class WalletService {
   };
 
   getWalletBalance = async (address: string): Promise<WalletToken[]> => {
-    const promises = await Promise.allSettled([
+    const tasks = [
       this.getBnbBalance(address),
       ...this.whitelist.map((w) => this.getBalanceByToken(address, w)),
-    ]);
+    ];
+
+    const promises = await Promise.allSettled(
+      tasks.map((task) => Promise.race([task, rejectAfterDelay()]))
+    );
 
     const tokens = promises
       .map((promise) =>
@@ -87,8 +91,8 @@ export class WalletService {
       )
       .filter((token) => token && token.balance > 0);
 
-    const ids = tokens.map((token) => token.id);
-    const prices = await this.priceService.getPrices(ids);
+    // const ids = tokens.map((token) => token.id);
+    const prices = await this.tokenHelper.getPrices(tokens);
 
     const tokenResult = tokens.map((token) => {
       const price = prices[token.id].usd || 0;

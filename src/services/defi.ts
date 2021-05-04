@@ -1,6 +1,7 @@
 import { sortBy } from "lodash";
 import { defi } from "../constants/defi";
 import { StakingResult } from "../types";
+import { rejectAfterDelay } from "../utils";
 import { getPositions, Masterchef } from "./masterchef";
 import { TokenHelper } from "./tokenHelper";
 import { Web3Service } from "./web3Service";
@@ -20,7 +21,15 @@ export class DeFiService {
   getAllStaking = async (address: string): Promise<StakingResult[]> => {
     const promises = await Promise.allSettled(
       this.masterchefs.map((masterchef) =>
-        this.#getStakingPosition(address, masterchef)
+        Promise.race([
+          this.#getStakingPosition(address, masterchef),
+          rejectAfterDelay(
+            this.#getStakingPositionRejectReason(
+              "",
+              "Time out getStakingPosition"
+            )
+          ),
+        ])
       )
     );
 
@@ -39,22 +48,34 @@ export class DeFiService {
     const poolName = `${name.toUpperCase()} pool`;
     try {
       const stakings = await masterchef.getStaking(defi[name].pools, address);
+      const positions = sortBy(
+        stakings.map((stake) => getPositions(stake)),
+        ["totalValue"]
+      ).reverse();
       return {
         name: poolName,
-        positions: sortBy(
-          stakings.map((stake) => getPositions(stake)),
-          ["totalValue"]
-        ).reverse(),
+        positions,
+        totalValue: positions.reduce(
+          (sum, position) => sum + position.totalValue,
+          0
+        ),
       };
     } catch (e) {
-      return {
-        name: poolName,
-        error: true,
-        message: `Cannot fetch ${name} pool`,
-        positions: [],
-      };
+      console.log(`getStakingPosition: ${e}`);
+      return this.#getStakingPositionRejectReason(poolName, "getStaking");
     }
   };
+
+  #getStakingPositionRejectReason = (
+    name: string,
+    message: string
+  ): StakingResult => ({
+    name,
+    error: true,
+    message: `Defi Service Error: ${message}`,
+    positions: [],
+    totalValue: 0,
+  });
 
   #getMasterChef = (name: string): Masterchef => {
     const masterChefAddress = defi[name].address;

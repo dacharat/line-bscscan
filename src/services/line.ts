@@ -3,6 +3,7 @@ import axios from "axios";
 
 const pushUrl = `${process.env.LINE_HOST}${process.env.LINE_PUSH_ENDPOINT}`;
 const ACCRSS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+const RETRY_SENDFLEX = parseInt(process.env.RETRY_SENDFLEX) || 3;
 
 export class LineService {
   constructor(
@@ -15,7 +16,14 @@ export class LineService {
     token: string,
     message: Message | any
   ): Promise<void> => {
-    this.client.replyMessage(token, message);
+    for (let i = 0; i < RETRY_SENDFLEX; i++) {
+      try {
+        await this.client.replyMessage(token, message);
+        return;
+      } catch (e) {
+        continue;
+      }
+    }
   };
 
   pushMessage = async (data: Message | any): Promise<void> => {
@@ -24,10 +32,14 @@ export class LineService {
       messages: [data],
     };
 
-    axios.post(pushUrl, body, {
-      headers: {
-        Authorization: `Bearer ${ACCRSS_TOKEN}`,
-      },
-    });
+    try {
+      await axios.post(pushUrl, body, {
+        headers: {
+          Authorization: `Bearer ${ACCRSS_TOKEN}`,
+        },
+      });
+    } catch (e) {
+      console.log(`pushMessage: ${e}`);
+    }
   };
 }
