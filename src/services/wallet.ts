@@ -19,47 +19,35 @@ export class WalletService {
     this.whitelist = whitelist;
   }
 
-  getBnbBalance = async (address: string): Promise<WalletToken> => {
-    const {
-      id,
-      logo,
-      decimals,
-      symbol,
-      name,
-      address: tokenAddress,
-    } = getTokenData("0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c");
+  #getBnbBalance = async (userAddress: string): Promise<WalletToken> => {
+    const { id, logo, decimals, symbol, name, address } = getTokenData(
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    );
 
-    const bnbBalance = await this.web3Service.getBalance(address);
+    const bnbBalance = await this.web3Service.getBalance(userAddress);
     const formatedBalance = toDecimal(bnbBalance, 18).toNumber();
 
-    return new Promise((resolve) =>
-      resolve({
-        id,
-        logo,
-        decimals,
-        symbol,
-        name,
-        address: tokenAddress,
-        balance: formatedBalance,
-      })
-    );
-  };
-
-  getBalanceByToken = async (
-    address: string,
-    token: string
-  ): Promise<WalletToken> => {
-    const contract = this.web3Service.getContract(this.abi, token);
-
-    const balance = await contract.methods.balanceOf(address).call();
-    const {
+    return {
       id,
       logo,
       decimals,
       symbol,
       name,
-      address: tokenAddress,
-    } = getTokenData(token);
+      address,
+      balance: formatedBalance,
+    };
+  };
+
+  #getBalanceByToken = async (
+    userAddress: string,
+    tokenAddress: string
+  ): Promise<WalletToken> => {
+    const contract = this.web3Service.getContract(this.abi, tokenAddress);
+
+    const balance = await contract.methods.balanceOf(userAddress).call();
+    const { id, logo, decimals, symbol, name, address } = getTokenData(
+      tokenAddress
+    );
     const formatedBalance = toDecimal(balance, decimals).toNumber();
 
     return {
@@ -68,15 +56,15 @@ export class WalletService {
       decimals,
       symbol,
       name,
-      address: tokenAddress,
+      address,
       balance: formatedBalance,
     };
   };
 
   getWalletBalance = async (address: string): Promise<WalletToken[]> => {
     const tasks = [
-      this.getBnbBalance(address),
-      ...this.whitelist.map((w) => this.getBalanceByToken(address, w)),
+      this.#getBnbBalance(address),
+      ...this.whitelist.map((w) => this.#getBalanceByToken(address, w)),
     ];
 
     const promises = await Promise.allSettled(
@@ -91,7 +79,6 @@ export class WalletService {
       )
       .filter((token) => token && token.balance > 0);
 
-    // const ids = tokens.map((token) => token.id);
     const prices = await this.tokenHelper.getPrices(tokens);
 
     const tokenResult = tokens.map((token) => {

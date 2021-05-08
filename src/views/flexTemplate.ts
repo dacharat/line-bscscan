@@ -141,7 +141,7 @@ export const poolLine = (position: Position) => ({
                         `${formatNumber(token.balance)} ${token.symbol}`
                     )
                     .join(" + "),
-                  size: "xs",
+                  size: "xxs",
                   align: "start",
                   gravity: "center",
                   color: COLOR.detail,
@@ -158,7 +158,7 @@ export const poolLine = (position: Position) => ({
                   text: `Reward: ${formatNumber(position.reward.balance)} ${
                     position.reward.symbol
                   }`,
-                  size: "xs",
+                  size: "xxs",
                   align: "start",
                   gravity: "center",
                   color: COLOR.detail,
@@ -308,3 +308,65 @@ export const generateFlex = (staking: StakingResult[]) => {
     ];
   });
 };
+
+// TODO refactor this funciton Ex. bg color
+export const dashboardFlex = (contents: any[], address: string) => ({
+  type: "flex",
+  altText: "Your BSC asset!!",
+  contents: {
+    type: "bubble",
+    body: {
+      type: "box",
+      layout: "vertical",
+      contents,
+      background: {
+        type: "linearGradient",
+        angle: "90deg",
+        startColor: "#29323c",
+        endColor: "#37434f",
+      },
+    },
+    footer: footerFlex(address),
+  },
+});
+
+const footerFlex = (address: string) => ({
+  type: "box",
+  layout: "vertical",
+  contents: [
+    {
+      type: "box",
+      layout: "horizontal",
+      contents: [
+        {
+          type: "button",
+          action: {
+            type: "uri",
+            label: "Transactions",
+            uri: `https://bscscan.com/address/${address}`,
+          },
+          height: "sm",
+          color: "#436AA9",
+          adjustMode: "shrink-to-fit",
+        },
+        {
+          type: "button",
+          action: {
+            type: "message",
+            label: "Scan again",
+            text: address,
+          },
+          height: "sm",
+          color: "#436AA9",
+          adjustMode: "shrink-to-fit",
+        },
+      ],
+    },
+  ],
+  background: {
+    type: "linearGradient",
+    angle: "90deg",
+    startColor: "#29323c",
+    endColor: "#37434f",
+  },
+});

@@ -3,13 +3,15 @@ export const whitelist: string[] = [
   "0x8076C74C5e3F5852037F31Ff0093Eeb8c8ADd8D3", // safemoon
   "0x1f546ad641b56b86fd9dceac473d1c7a357276b7", // Panther
   "0x070a9867ea49ce7afc4505817204860e823489fe", // Six
-  "0x0f02b1f5af54e04fb6dd6550f009ac2429c4e30d", // finix cannot use for now because coingecko doesn't support this token
+  "0x0f02b1f5af54e04fb6dd6550f009ac2429c4e30d", // finix
   "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", // CAKE
   "0xf7844cb890f4c339c497aeab599abdc3c874b67a", // NFT art
   "0x0feadcc3824e7f3c12f40e324a60c23ca51627fc", // WARDEN
 ];
 
-export const lpTokenWhiteList: string[] = [
-  "0x0feadcc3824e7f3c12f40e324a60c23ca51627fc",
-  "0x0f02b1f5af54e04fb6dd6550f009ac2429c4e30d",
+export const unlistedCoingeckoToken: string[] = [
+  "0x0feadcc3824e7f3c12f40e324a60c23ca51627fc", // WARDEN
+  "0x0f02b1f5af54e04fb6dd6550f009ac2429c4e30d", // FINIX
+  "0xf138090a6baeb5f846dd71cf191b3cbc0140ba97", // GARUDA
+  "0x88371dec00bc3543231e01089c3dc6d94289d4af", // GATOR
 ];

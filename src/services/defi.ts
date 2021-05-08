@@ -25,7 +25,7 @@ export class DeFiService {
           this.#getStakingPosition(address, masterchef),
           rejectAfterDelay(
             this.#getStakingPositionRejectReason(
-              "",
+              "Pool",
               "Time out getStakingPosition"
             )
           ),

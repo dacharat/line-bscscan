@@ -14,7 +14,8 @@ export class LineService {
 
   replyMessage = async (
     token: string,
-    message: Message | any
+    message: Message | any,
+    errorMessage?: Message | any
   ): Promise<void> => {
     for (let i = 0; i < RETRY_SENDFLEX; i++) {
       try {
@@ -24,9 +25,16 @@ export class LineService {
         continue;
       }
     }
+
+    if (errorMessage) {
+      await this.client.replyMessage(token, errorMessage);
+    }
   };
 
-  pushMessage = async (data: Message | any): Promise<void> => {
+  pushMessage = async (
+    data: Message | any,
+    errorMessage?: Message | any
+  ): Promise<void> => {
     const body = {
       to: process.env.LINE_USER_ID,
       messages: [data],
@@ -38,8 +46,24 @@ export class LineService {
           Authorization: `Bearer ${ACCRSS_TOKEN}`,
         },
       });
+      return;
     } catch (e) {
       console.log(`pushMessage: ${e}`);
+    }
+
+    if (errorMessage) {
+      await axios.post(
+        pushUrl,
+        {
+          to: process.env.LINE_USER_ID,
+          messages: [errorMessage],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${ACCRSS_TOKEN}`,
+          },
+        }
+      );
     }
   };
 }

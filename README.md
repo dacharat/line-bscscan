@@ -15,12 +15,28 @@
 - CAKE
 - SAFEMOON
 - PANTHER
+- FINIX
+- WARDEN
 
 #### Pool available
 - [PancakeSwap](https://pancakeswap.finance/)
 - [Defnix](https://bsc.definix.com/)
 - [PantherSwap](https://pantherswap.com/)
 - [WardenSwap](https://www.wardenswap.finance/#/)
+- [GarudaSwap](https://garudaswap.finance/)
+- [GatorSwap](https://gatorswap.xyz/)
+
+#### How to add new pool
+- add pool MasterChef abi to `src/abi/{pool}/MasterChef.json`
+- add token pool detail to `src/constants/coingecko.ts`
+- add pool detail to `src/constants/defi.ts` (pool name, id, master chef abi)
+- change `getPoolInfos` at `src/script/index.ts` parameter to new pool name
+- run `yarn script`
+- copy result from `token-{pool}.txt` to `src/constants/{pool}/pools.ts`
+- add pool list to `src/constants/defi.ts` again
+- in case that coingecko doesn't list token pool to platform
+  - you need to add `{pool token}-BUSD` pool address to `lpPair` at `src/constants/coingecko.ts`
+  - also add token address to `src/constants/whitelist.ts` 
 
 #### Features
 - [x] list assets from BSC wallet

@@ -98,7 +98,7 @@ export class Masterchef {
     // 1. Get staking balance
     let stakingBalance: (PoolInfo & TokenBalance)[] = await Promise.all(
       poolInfos.map(async (poolInfo) => {
-        const balance = await this.getStakingBalance(poolInfo, address);
+        const balance = await this.#getStakingBalance(poolInfo, address);
         return { ...poolInfo, ...balance };
       })
     );
@@ -111,7 +111,7 @@ export class Masterchef {
     // 3. Get more information about staking
     const position: Staking[] = await Promise.all(
       stakingBalance.map(async (staking) => {
-        const reward = await this.getStakingReward(staking, address);
+        const reward = await this.#getStakingReward(staking, address);
         const rewardPrice = await this.helper.getRewardPrice(staking);
         if (staking.type === "lp") {
           const underlying = await this.helper.getLPUnderlyingBalance(staking);
@@ -132,7 +132,7 @@ export class Masterchef {
     return position;
   };
 
-  getStakingBalance = async (
+  #getStakingBalance = async (
     poolInfo: PoolInfo,
     address: string
   ): Promise<TokenBalance> => {
@@ -148,7 +148,7 @@ export class Masterchef {
     return staking;
   };
 
-  getStakingReward = async (
+  #getStakingReward = async (
     poolInfo: PoolInfo,
     address: string
   ): Promise<RewardBalance> => {
@@ -174,7 +174,7 @@ export const getPositions = (staking: Staking): Position => {
   return singleStakingToPosition(staking);
 };
 
-export const singleStakingToPosition = (staking: SingleStaking): Position => {
+const singleStakingToPosition = (staking: SingleStaking): Position => {
   return {
     tokens: [
       {
@@ -199,7 +199,7 @@ export const singleStakingToPosition = (staking: SingleStaking): Position => {
   };
 };
 
-export const lpStakingToPosition = (staking: LPStaking): Position => {
+const lpStakingToPosition = (staking: LPStaking): Position => {
   return {
     tokens: [
       {

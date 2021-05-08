@@ -18,7 +18,7 @@ import { PriceService } from "./priceService";
 import { Web3Service } from "./web3Service";
 import { toDecimal } from "../utils";
 import { getTokenData } from "../constants/coingecko";
-import { lpTokenWhiteList } from "../constants/whitelist";
+import { unlistedCoingeckoToken } from "../constants/whitelist";
 
 import { partition } from "lodash";
 
@@ -137,7 +137,7 @@ export class TokenHelper {
   };
 
   getPrice = async (address: string): Promise<number> => {
-    if (lpTokenWhiteList.includes(address)) {
+    if (unlistedCoingeckoToken.includes(address)) {
       return this.#getPriceFromFarmsPair(address);
     }
     return this.priceService.getPrice(address);
@@ -146,7 +146,7 @@ export class TokenHelper {
   getPrices = async (walletToken: WalletToken[]) => {
     const [coingeckoListed, coingeckoUnlisted] = partition(
       walletToken,
-      (w) => !lpTokenWhiteList.includes(w.address)
+      (w) => !unlistedCoingeckoToken.includes(w.address)
     );
     const coingeckoPrices = await this.priceService.getPrices(
       coingeckoListed.map((p) => p.id)

@@ -11,6 +11,7 @@ import {
   errorFlex,
   generateFlex,
   subTotal,
+  dashboardFlex,
 } from "./views/flexTemplate";
 import { isValidAddress, shortenAddress } from "./utils";
 
@@ -45,8 +46,7 @@ app.post("/webhook", async (req, res) => {
   if (eventType !== "text" || !isValidAddress(message)) {
     await lineService.replyMessage(replyToken, {
       type: "text",
-      text:
-        "Please input valid BSC address. For example, 0x3c74c735b5863c0baf52598d8fd2d59611c8320f 🐳",
+      text: "Please input valid BSC address. For example, 0x3c74c735b5863c0baf52598d8fd2d59611c8320f 🐳",
     });
     return res.sendStatus(200);
   }
@@ -55,7 +55,7 @@ app.post("/webhook", async (req, res) => {
 
   const data = await buildFlexTemplate(address);
 
-  await lineService.replyMessage(replyToken, data);
+  await lineService.replyMessage(replyToken, data, errorFlex(address));
 
   return res.sendStatus(200);
 });
@@ -65,7 +65,7 @@ app.get("/test/:id", async (req, res) => {
 
   const data = await buildFlexTemplate(address);
 
-  lineService.pushMessage(data);
+  lineService.pushMessage(data, errorFlex(address));
 
   res.status(200).send({ message: "succeess" });
 });
@@ -81,38 +81,23 @@ const buildFlexTemplate = async (address: string) => {
 
     const walletTokens = await walletService.getWalletBalance(address);
     const walletTotal = walletTokens.reduce(
-      (sum, token) => sum + token?.totalValue,
+      (sum, token) => sum + token.totalValue,
       0
     );
 
     const totalValue = totalPositionValue + walletTotal;
 
-    return {
-      type: "flex",
-      altText: "Your BSC asset!!",
-      contents: {
-        type: "bubble",
-        body: {
-          type: "box",
-          layout: "vertical",
-          contents: [
-            addressBar(shortenAddress(address)),
-            tableHeader("Wallet"),
-            ...walletTokens.map(walletLine),
-            subTotal(walletTotal),
-            separator(),
-            ...generateFlex(allStaking).flat(),
-            summary(totalValue),
-          ],
-          background: {
-            type: "linearGradient",
-            angle: "90deg",
-            startColor: "#29323c",
-            endColor: "#37434f",
-          },
-        },
-      },
-    };
+    const contents = [
+      addressBar(shortenAddress(address)),
+      tableHeader("Wallet"),
+      ...walletTokens.map(walletLine),
+      subTotal(walletTotal),
+      separator(),
+      ...generateFlex(allStaking).flat(),
+      summary(totalValue),
+    ];
+
+    return dashboardFlex(contents, address);
   } catch (e) {
     console.log(`buildFlexTemplate: ${e}`);
     return errorFlex(address);
