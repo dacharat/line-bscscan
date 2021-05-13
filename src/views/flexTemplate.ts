@@ -309,6 +309,13 @@ export const generateFlex = (staking: StakingResult[]) => {
   });
 };
 
+const gradientBackground = () => ({
+  type: "linearGradient",
+  angle: "90deg",
+  startColor: "#29323c",
+  endColor: "#37434f",
+});
+
 // TODO refactor this funciton Ex. bg color
 export const dashboardFlex = (contents: any[], address: string) => ({
   type: "flex",
@@ -319,12 +326,7 @@ export const dashboardFlex = (contents: any[], address: string) => ({
       type: "box",
       layout: "vertical",
       contents,
-      background: {
-        type: "linearGradient",
-        angle: "90deg",
-        startColor: "#29323c",
-        endColor: "#37434f",
-      },
+      background: gradientBackground(),
     },
     footer: footerFlex(address),
   },
@@ -363,10 +365,5 @@ const footerFlex = (address: string) => ({
       ],
     },
   ],
-  background: {
-    type: "linearGradient",
-    angle: "90deg",
-    startColor: "#29323c",
-    endColor: "#37434f",
-  },
+  background: gradientBackground(),
 });

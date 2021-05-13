@@ -1729,7 +1729,7 @@ export const tokens: Record<string, Token> = {
     address: "0x5ef5994fa33ff4eb6c82d51ee1dc145c546065bd",
   },
   "0x844fa82f1e54824655470970f7004dd90546bb28": {
-    id: null,
+    id: "dopple-finance",
     symbol: "DOP",
     name: "Dopple",
     platform: Platform.BINANCE_SMART_CHAIN,
@@ -2099,6 +2099,16 @@ export const tokens: Record<string, Token> = {
     decimals: 18,
     address: "0x88371dec00bc3543231e01089c3dc6d94289d4af",
     lpPair: "0x6b2881a0d6b853b988dcd659908a0cb154e88eec",
+  },
+  "0xdf5a096d33de84b11041a7ff78e7008c328184ab": {
+    id: "grizzly",
+    symbol: "GRZ",
+    name: "Grizzly",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+    decimals: 18,
+    address: "0xdf5a096d33de84b11041a7ff78e7008c328184ab",
+    lpPair: "0xfbf806c85fcc0fd166f05c2fd119824f7aaa0fb9",
   },
 };
 

@@ -43,7 +43,7 @@ export class Masterchef {
       poolIds.map(async (pid: number) => {
         const pool = await this.masterchef.methods.poolInfo(pid).call();
         const lpAddress = pool.lpToken.toLowerCase();
-        let tokenDecimals;
+        let tokenDecimals = 0;
         try {
           tokenDecimals = await this.helper.getTokenDecimals(lpAddress);
         } catch {
@@ -51,7 +51,8 @@ export class Masterchef {
         }
         try {
           const pair = await this.helper.getTokenPair(lpAddress);
-          const poolInfo: LPPoolInfo = {
+
+          return {
             poolId: pid,
             lpAddress,
             tokenDecimals,
@@ -68,11 +69,10 @@ export class Masterchef {
             rewardDecimals,
             rewardLogo,
             type: "lp",
-          };
-          return poolInfo;
+          } as LPPoolInfo | SinglePoolInfo;
         } catch {
           const tokenSymbol = await this.helper.getTokenSymbol(lpAddress);
-          const poolInfo: SinglePoolInfo = {
+          return {
             poolId: pid,
             tokenAddress: lpAddress,
             tokenSymbol,
@@ -83,8 +83,7 @@ export class Masterchef {
             rewardDecimals,
             rewardLogo,
             type: "single",
-          };
-          return poolInfo;
+          } as LPPoolInfo | SinglePoolInfo;
         }
       })
     );
@@ -109,7 +108,7 @@ export class Masterchef {
     );
 
     // 3. Get more information about staking
-    const position: Staking[] = await Promise.all(
+    return Promise.all(
       stakingBalance.map(async (staking) => {
         const reward = await this.#getStakingReward(staking, address);
         const rewardPrice = await this.helper.getRewardPrice(staking);
@@ -128,8 +127,6 @@ export class Masterchef {
         return { ...staking, ...reward, ...rewardPrice, ...price };
       })
     );
-
-    return position;
   };
 
   #getStakingBalance = async (
@@ -142,10 +139,10 @@ export class Masterchef {
     const user = await this.masterchef.methods
       .userInfo(poolInfo.poolId, address)
       .call();
-    const staking = {
+
+    return {
       tokenBalance: toDecimal(user.amount, poolInfo.tokenDecimals).toNumber(),
     };
-    return staking;
   };
 
   #getStakingReward = async (
@@ -157,13 +154,12 @@ export class Masterchef {
       poolInfo.poolId,
       address
     ).call();
-    const reward = {
+    return {
       rewardBalance: toDecimal(
         pendingReward,
         poolInfo.rewardDecimals
       ).toNumber(),
     };
-    return reward;
   };
 }
 

@@ -3,13 +3,13 @@ import {
   LPPoolInfo,
   PoolInfo,
   RewardPrice,
-  SinglePoolInfo,
   TokenBalance,
   TokenPair,
   SinglePrice,
   LPPrice,
   WalletToken,
   CoinGeckoResponse,
+  SinglePoolInfo,
 } from "../types";
 
 import BEP20 from "../abi/BEP20.json";
@@ -18,7 +18,7 @@ import { PriceService } from "./priceService";
 import { Web3Service } from "./web3Service";
 import { toDecimal } from "../utils";
 import { getTokenData } from "../constants/coingecko";
-import { unlistedCoingeckoToken } from "../constants/whitelist";
+import { stableCoinLp, unlistedCoingeckoToken } from "../constants/whitelist";
 
 import { partition } from "lodash";
 
@@ -31,7 +31,7 @@ export class TokenHelper {
   //   BEP20
   getTokenSymbol = async (address: string): Promise<string> => {
     const tokenContract = this.web3Service.getContract(BEP20.abi, address);
-    return await tokenContract.methods.symbol().call();
+    return tokenContract.methods.symbol().call();
   };
 
   getTokenDecimals = async (address: string): Promise<number> => {
@@ -106,7 +106,13 @@ export class TokenHelper {
   getSingleStakingPrice = async (
     poolInfo: SinglePoolInfo
   ): Promise<SinglePrice> => {
-    const tokenPrice = await this.getPrice(poolInfo.tokenAddress);
+    let tokenPrice = 0;
+    if (stableCoinLp.includes(poolInfo.tokenAddress)) {
+      tokenPrice = 1;
+    } else {
+      tokenPrice = await this.getPrice(poolInfo.tokenAddress);
+    }
+
     return {
       tokenPrice,
     };

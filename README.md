@@ -25,6 +25,8 @@
 - [WardenSwap](https://www.wardenswap.finance/#/)
 - [GarudaSwap](https://garudaswap.finance/)
 - [GatorSwap](https://gatorswap.xyz/)
+- [GrizzlySwap](https://www.grizzlyswap.com/)
+- [DoppleFinance](https://dopple.finance/)
 
 #### How to add new pool
 - add pool MasterChef abi to `src/abi/{pool}/MasterChef.json`

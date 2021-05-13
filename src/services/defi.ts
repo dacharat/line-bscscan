@@ -1,4 +1,4 @@
-import { sortBy } from "lodash";
+import { partition, sortBy } from "lodash";
 import { defi } from "../constants/defi";
 import { StakingResult } from "../types";
 import { rejectAfterDelay } from "../utils";
@@ -33,11 +33,17 @@ export class DeFiService {
       )
     );
 
-    return promises.map((promise) =>
-      promise.status === "fulfilled"
-        ? (promise as PromiseFulfilledResult<StakingResult> | undefined)?.value
-        : promise?.reason
+    const [stakings, errors] = partition(
+      promises.map((promise) =>
+        promise.status === "fulfilled"
+          ? (promise as PromiseFulfilledResult<StakingResult> | undefined)
+              ?.value
+          : promise?.reason
+      ) as StakingResult[],
+      (result) => !result.error
     );
+
+    return [...sortBy(stakings, ["totalValue"]).reverse(), ...errors];
   };
 
   #getStakingPosition = async (

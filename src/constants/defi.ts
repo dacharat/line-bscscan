@@ -6,6 +6,8 @@ import pantherMc from "../abi/panther/MasterChef.json";
 import wardenMc from "../abi/warden/MasterChef.json";
 import garudaMc from "../abi/garuda/MasterChef.json";
 import gatorMc from "../abi/gator/MasterChef.json";
+import grizzlyMc from "../abi/grizzly/MasterChef.json";
+import doppleMc from "../abi/dopple/MasterChef.json";
 
 import { pools as pancakePools } from "./pancake/pools";
 import { pools as finixPools } from "./finix/pools";
@@ -13,6 +15,8 @@ import { pools as pantherPools } from "./panther/pools";
 import { pools as wardenPools } from "./warden/pools";
 import { pools as garudaPools } from "./garuda/pools";
 import { pools as gatorPools } from "./gator/pools";
+import { pools as grizzlyPools } from "./grizzly/pools";
+import { pools as dopplePools } from "./dopple/pools";
 
 export const defi: IDefi = {
   cake: {
@@ -44,5 +48,15 @@ export const defi: IDefi = {
     address: "0x55Da3b152F48378A42D091be1eef2af37964BE45",
     abi: gatorMc.abi,
     pools: gatorPools,
+  },
+  grizzly: {
+    address: "0x6ad77aeb7fc86751f375ea1711dc2cb25c9d4d16",
+    abi: grizzlyMc.abi,
+    pools: grizzlyPools,
+  },
+  dopple: {
+    address: "0xda0a175960007b0919dbf11a38e6ec52896bddbe",
+    abi: doppleMc.abi,
+    pools: dopplePools,
   },
 };
