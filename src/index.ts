@@ -21,6 +21,9 @@ import { Web3Service } from "./services/web3Service";
 import { LineService } from "./services/line";
 import { DeFiService } from "./services/defi";
 import { WalletService } from "./services/wallet";
+import { CompoundFlip } from "./services/compoundFlip";
+import { compoundFlip } from "./constants/defi";
+import { getPositions } from "./services/masterchef";
 
 // Init Express
 const app = express();
@@ -110,12 +113,19 @@ app.listen(port, () => {
 
 // const test = async () => {
 //   const address = "0x7b77C877B4396d707159baf62af3E667B4e845b6";
-//   const s = await web3Service.getWalletBalance(address);
-//   // const stakings = await finixMasterChef.getStaking(finixPools, address);
-//   const a = await web3Service.web3.eth.getAccounts();
+//   // const s = await web3Service.getWalletBalance(address);
+//   // // const stakings = await finixMasterChef.getStaking(finixPools, address);
+//   // const a = await web3Service.web3.eth.getAccounts();
 
-//   console.log(s);
-//   console.log(a);
+//   // console.log(s);
+//   // console.log(a);
+
+//   const c = web3Service.getContract(
+//     compoundFlip.autoShark.abi,
+//     compoundFlip.autoShark.address
+//   );
+//   const conpoundFlip = new CompoundFlip(address, c, helper);
+//   conpoundFlip.getInfo();
 // };
 
 // test().then((_) => console.log("done"));

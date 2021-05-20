@@ -1,4 +1,5 @@
 import {
+  FlipStaking,
   LPPoolInfo,
   LPStaking,
   PoolInfo,
@@ -15,8 +16,9 @@ import { TokenHelper } from "./tokenHelper";
 import { getTokenData } from "../constants/coingecko";
 import { isEmpty } from "lodash";
 import { toDecimal } from "../utils";
+import { ContractInterface } from "./interfaces/contract";
 
-export class Masterchef {
+export class Masterchef implements ContractInterface {
   constructor(
     private readonly name: string,
     private readonly masterchef: Contract,
@@ -112,19 +114,26 @@ export class Masterchef {
       stakingBalance.map(async (staking) => {
         const reward = await this.#getStakingReward(staking, address);
         const rewardPrice = await this.helper.getRewardPrice(staking);
-        if (staking.type === "lp") {
-          const underlying = await this.helper.getLPUnderlyingBalance(staking);
-          const stakingPrice = await this.helper.getLPStakingPrice(staking);
-          return {
-            ...staking,
-            ...reward,
-            ...rewardPrice,
-            ...underlying,
-            ...stakingPrice,
-          };
+        switch (staking.type) {
+          case "lp":
+            const underlying = await this.helper.getLPUnderlyingBalance(
+              staking
+            );
+            const stakingPrice = await this.helper.getLPStakingPrice(staking);
+            return {
+              ...staking,
+              ...reward,
+              ...rewardPrice,
+              ...underlying,
+              ...stakingPrice,
+            };
+          case "flip":
+            return null;
+          case "single":
+          default:
+            const price = await this.helper.getSingleStakingPrice(staking);
+            return { ...staking, ...reward, ...rewardPrice, ...price };
         }
-        const price = await this.helper.getSingleStakingPrice(staking);
-        return { ...staking, ...reward, ...rewardPrice, ...price };
       })
     );
   };
@@ -149,6 +158,9 @@ export class Masterchef {
     poolInfo: PoolInfo,
     address: string
   ): Promise<RewardBalance> => {
+    if (poolInfo.type === "flip") {
+      return null;
+    }
     const fnName = `pending${this.name[0].toUpperCase() + this.name.slice(1)}`;
     const pendingReward = await this.masterchef.methods[fnName](
       poolInfo.poolId,
@@ -164,13 +176,19 @@ export class Masterchef {
 }
 
 export const getPositions = (staking: Staking): Position => {
-  if (staking.type === "lp") {
-    return lpStakingToPosition(staking);
+  switch (staking.type) {
+    case "lp":
+      return lpStakingToPosition(staking);
+    case "flip":
+      return flipStakingToPosition(staking);
+    default:
+      return singleStakingToPosition(staking);
   }
-  return singleStakingToPosition(staking);
 };
 
 const singleStakingToPosition = (staking: SingleStaking): Position => {
+  const tokensValue = staking.tokenBalance * staking.tokenPrice;
+  const rewardsValue = staking.rewardBalance * staking.rewardPrice;
   return {
     tokens: [
       {
@@ -181,21 +199,27 @@ const singleStakingToPosition = (staking: SingleStaking): Position => {
         price: staking.tokenPrice,
       },
     ],
+    tokensValue,
     balance: staking.tokenBalance,
-    reward: {
-      symbol: staking.rewardSymbol,
-      address: staking.rewardAddress,
-      logo: staking.rewardLogo,
-      balance: staking.rewardBalance,
-      price: staking.rewardPrice,
-    },
-    totalValue:
-      staking.tokenBalance * staking.tokenPrice +
-      staking.rewardBalance * staking.rewardPrice,
+    rewards: [
+      {
+        symbol: staking.rewardSymbol,
+        address: staking.rewardAddress,
+        logo: staking.rewardLogo,
+        balance: staking.rewardBalance,
+        price: staking.rewardPrice,
+      },
+    ],
+    rewardsValue,
+    totalValue: tokensValue + rewardsValue,
   };
 };
 
 const lpStakingToPosition = (staking: LPStaking): Position => {
+  const tokensValue =
+    staking.token0Balance * staking.token0Price +
+    staking.token1Balance * staking.token1Price;
+  const rewardsValue = staking.rewardBalance * staking.rewardPrice;
   return {
     tokens: [
       {
@@ -213,17 +237,57 @@ const lpStakingToPosition = (staking: LPStaking): Position => {
         price: staking.token1Price,
       },
     ],
+    tokensValue,
     balance: staking.tokenBalance,
-    reward: {
-      symbol: staking.rewardSymbol,
-      address: staking.rewardAddress,
-      logo: staking.rewardLogo,
-      balance: staking.rewardBalance,
-      price: staking.rewardPrice,
-    },
-    totalValue:
-      staking.token0Balance * staking.token0Price +
-      staking.token1Balance * staking.token1Price +
-      staking.rewardBalance * staking.rewardPrice,
+    rewards: [
+      {
+        symbol: staking.rewardSymbol,
+        address: staking.rewardAddress,
+        logo: staking.rewardLogo,
+        balance: staking.rewardBalance,
+        price: staking.rewardPrice,
+      },
+    ],
+    rewardsValue,
+    totalValue: tokensValue + rewardsValue,
+  };
+};
+
+const flipStakingToPosition = (staking: FlipStaking): Position => {
+  const tokensValue =
+    staking.token0Balance * staking.token0Price +
+    staking.token1Balance * staking.token1Price;
+  const rewardsValue = Object.values(staking.rewardDetail).reduce(
+    (cur, reward) => cur + reward.rewardBalance * reward.rewardPrice,
+    0
+  );
+  return {
+    tokens: [
+      {
+        symbol: staking.token0Symbol,
+        address: staking.token0Address,
+        logo: staking.token0Logo,
+        balance: staking.token0Balance,
+        price: staking.token0Price,
+      },
+      {
+        symbol: staking.token1Symbol,
+        address: staking.token1Address,
+        logo: staking.token1Logo,
+        balance: staking.token1Balance,
+        price: staking.token1Price,
+      },
+    ],
+    tokensValue,
+    balance: staking.tokenBalance,
+    rewards: staking.rewards.map((reward) => ({
+      symbol: reward.symbol,
+      address: reward.address,
+      logo: reward.logo,
+      balance: staking.rewardDetail[reward.address].rewardBalance,
+      price: staking.rewardDetail[reward.address].rewardPrice,
+    })),
+    rewardsValue,
+    totalValue: tokensValue + rewardsValue,
   };
 };

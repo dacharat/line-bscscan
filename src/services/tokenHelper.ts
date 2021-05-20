@@ -10,6 +10,7 @@ import {
   WalletToken,
   CoinGeckoResponse,
   SinglePoolInfo,
+  FlipPoolInfo,
 } from "../types";
 
 import BEP20 from "../abi/BEP20.json";
@@ -64,7 +65,7 @@ export class TokenHelper {
   };
 
   getLPUnderlyingBalance = async (
-    poolInfo: LPPoolInfo & TokenBalance
+    poolInfo: (LPPoolInfo | FlipPoolInfo) & TokenBalance
   ): Promise<LPBalance> => {
     const lpContract = this.web3Service.getContract(
       FarmsPair.abi,
@@ -97,6 +98,9 @@ export class TokenHelper {
 
   //   Price
   getRewardPrice = async (poolInfo: PoolInfo): Promise<RewardPrice> => {
+    if (poolInfo.type === "flip") {
+      return null;
+    }
     const rewardPrice = await this.getPrice(poolInfo.rewardAddress);
     return {
       rewardPrice,
@@ -118,7 +122,9 @@ export class TokenHelper {
     };
   };
 
-  getLPStakingPrice = async (poolInfo: LPPoolInfo): Promise<LPPrice> => {
+  getLPStakingPrice = async (
+    poolInfo: LPPoolInfo | FlipPoolInfo
+  ): Promise<LPPrice> => {
     let [token0Price, token1Price] = await Promise.all([
       this.getPrice(poolInfo.token0Address),
       this.getPrice(poolInfo.token1Address),
@@ -137,8 +143,12 @@ export class TokenHelper {
 
     const lpContract = this.web3Service.getContract(FarmsPair.abi, lpAddress);
 
+    const token0Address = await lpContract.methods.token0().call();
     const reserve = await lpContract.methods.getReserves().call();
 
+    if (this.#isBUSD(token0Address)) {
+      return reserve._reserve0 / reserve._reserve1;
+    }
     return reserve._reserve1 / reserve._reserve0;
   };
 
@@ -171,5 +181,9 @@ export class TokenHelper {
     }, {});
 
     return { ...coingeckoPrices, ...prices };
+  };
+
+  #isBUSD = (address: string): boolean => {
+    return address === "0xe9e7cea3dedca5984780bafc599bd69add087d56";
   };
 }

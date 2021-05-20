@@ -2,27 +2,27 @@ import { partition, sortBy } from "lodash";
 import { defi } from "../constants/defi";
 import { StakingResult } from "../types";
 import { rejectAfterDelay } from "../utils";
+import { CompoundFlip } from "./compoundFlip";
+import { ContractInterface } from "./interfaces/contract";
 import { getPositions, Masterchef } from "./masterchef";
 import { TokenHelper } from "./tokenHelper";
 import { Web3Service } from "./web3Service";
 
 export class DeFiService {
-  private masterchefs: Masterchef[];
+  private contracts: ContractInterface[];
 
   constructor(
     private readonly web3Service: Web3Service,
     private readonly helper: TokenHelper
   ) {
-    this.masterchefs = Object.keys(defi).map((name) =>
-      this.#getMasterChef(name)
-    );
+    this.contracts = Object.keys(defi).map((name) => this.#getMasterChef(name));
   }
 
   getAllStaking = async (address: string): Promise<StakingResult[]> => {
     const promises = await Promise.allSettled(
-      this.masterchefs.map((masterchef) =>
+      this.contracts.map((contract) =>
         Promise.race([
-          this.#getStakingPosition(address, masterchef),
+          this.#getStakingPosition(address, contract),
           rejectAfterDelay(
             this.#getStakingPositionRejectReason(
               "Pool",
@@ -48,16 +48,17 @@ export class DeFiService {
 
   #getStakingPosition = async (
     address: string,
-    masterchef: Masterchef
+    contract: ContractInterface
   ): Promise<StakingResult> => {
-    const name = masterchef.getName();
+    const name = contract.getName();
     const poolName = `${name.toUpperCase()} pool`;
     try {
-      const stakings = await masterchef.getStaking(defi[name].pools, address);
+      const stakings = await contract.getStaking(defi[name].pools, address);
       const positions = sortBy(
         stakings.map((stake) => getPositions(stake)),
         ["totalValue"]
       ).reverse();
+
       return {
         name: poolName,
         positions,
@@ -83,12 +84,13 @@ export class DeFiService {
     totalValue: 0,
   });
 
-  #getMasterChef = (name: string): Masterchef => {
-    const masterChefAddress = defi[name].address;
-    const contract = this.web3Service.getContract(
-      defi[name].abi,
-      masterChefAddress
-    );
+  #getMasterChef = (name: string): ContractInterface => {
+    const { abi, address, type } = defi[name];
+    const contract = this.web3Service.getContract(abi, address);
+
+    if (type === "automate") {
+      return new CompoundFlip(name, contract, this.helper);
+    }
     return new Masterchef(name, contract, this.helper);
   };
 }

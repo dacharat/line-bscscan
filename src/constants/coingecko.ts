@@ -16,6 +16,91 @@ export type Token = {
   lpPair?: string; // TOKEN-BUSD pair address use to get price from the token that doesn't list in coingecko
 };
 
+const ploutozTokens: Record<string, Token> = {
+  "0x437dbc6ade5c2aed52bf5ccb54bf1b87a53cc436": {
+    id: "ploutoz",
+    symbol: "PTZ",
+    name: "Ploutoz Finance 2.0",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+    decimals: 18,
+    address: "0x437dbc6ade5c2aed52bf5ccb54bf1b87a53cc436",
+    lpPair: "0xf2ce376f44dfe247e2348fe1dfb6eb31ff110dd7",
+  },
+  "0x27b6031e9cbb9a383acf2f7d7168ba052ccaecfb": {
+    id: "binance-usd",
+    symbol: "pBUSD",
+    name: "Pluto BUSD Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://assets.coingecko.com/coins/images/9576/large/BUSD.png?1568947766",
+    decimals: 18,
+    address: "0x27b6031e9cbb9a383acf2f7d7168ba052ccaecfb",
+  },
+  "0xc9eac733e69c7f02b4320f1c2e25a76a770edfeb": {
+    id: "dopple-finance",
+    symbol: "pDOP",
+    name: "Pluto DOP Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://dopple.finance/_next/image?url=%2Fimages%2Flogo.svg&w=128&q=75",
+    decimals: 18,
+    address: "0xc9eac733e69c7f02b4320f1c2e25a76a770edfeb",
+  },
+  "0x4939903c517f1a87ed34790033f1dc9f32962c4c": {
+    id: null,
+    symbol: "pDOP",
+    name: "Pluto DOP Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://pbs.twimg.com/profile_images/1373556169218740224/Gwy3GObb_400x400.jpg",
+    decimals: 18,
+    address: "0x4939903c517f1a87ed34790033f1dc9f32962c4c",
+  },
+  "0x1a66c619943280df31d1f466ada5bc4fb9f19117": {
+    id: "tether",
+    symbol: "pUSDT",
+    name: "Pluto USDT Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://assets.coingecko.com/coins/images/325/large/Tether-logo.png?1598003707",
+    decimals: 18,
+    address: "0x1a66c619943280df31d1f466ada5bc4fb9f19117",
+  },
+  "0xbfa0ed8a55d0d83ed92a9a96c35d59a54d238872": {
+    id: "ethereum",
+    symbol: "pWETH",
+    name: "Pluto WETH Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+    decimals: 18,
+    address: "0xbfa0ed8a55d0d83ed92a9a96c35d59a54d238872",
+  },
+  "0x1ef256e054c838b0c5a544149459c7f719ff7a8d": {
+    id: "wrapped-bitcoin",
+    symbol: "pBTCB",
+    name: "Pluto BTCB Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://assets.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png?1548822744",
+    decimals: 18,
+    address: "0x1ef256e054c838b0c5a544149459c7f719ff7a8d",
+  },
+  "0x0695ba30878a60403ec7a858b370064bf280e1f7": {
+    id: "binancecoin",
+    symbol: "pWBNB",
+    name: "Pluto WBNB Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png?1547034615",
+    decimals: 18,
+    address: "0x0695ba30878a60403ec7a858b370064bf280e1f7",
+  },
+  "0x539ff593840387439196721cb2ce5a94051daeb6": {
+    id: "pancakeswap-token",
+    symbol: "pCAKE",
+    name: "Pluto CAKE Loan Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://exchange.pancakeswap.finance/images/coins/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82.png",
+    decimals: 18,
+    address: "0x539ff593840387439196721cb2ce5a94051daeb6",
+  },
+};
+
 export const tokens: Record<string, Token> = {
   "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
     id: "ethereum",
@@ -1746,6 +1831,15 @@ export const tokens: Record<string, Token> = {
     decimals: 18,
     address: "0x9116f04092828390799514bac9986529d70c3791",
   },
+  "0xff54da7caf3bc3d34664891fc8f3c9b6dea6c7a5": {
+    id: null,
+    symbol: "DOLLY",
+    name: "Dolly Stable Coin",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://pbs.twimg.com/profile_images/1373556169218740224/Gwy3GObb_400x400.jpg",
+    decimals: 18,
+    address: "0xff54da7caf3bc3d34664891fc8f3c9b6dea6c7a5",
+  },
   "0x42f6f551ae042cbe50c739158b4f0cac0edb9096": {
     id: "nerve-finance",
     symbol: "NRV",
@@ -2110,6 +2204,17 @@ export const tokens: Record<string, Token> = {
     address: "0xdf5a096d33de84b11041a7ff78e7008c328184ab",
     lpPair: "0xfbf806c85fcc0fd166f05c2fd119824f7aaa0fb9",
   },
+  "0xf7321385a461c4490d5526d83e63c366b149cb15": {
+    id: "shark",
+    symbol: "SHARK",
+    name: "Shark Token",
+    platform: Platform.BINANCE_SMART_CHAIN,
+    logo: "https://firebasestorage.googleapis.com/v0/b/ape-board-prod.appspot.com/o/logo%2Fautoshark.png?alt=media&token=a4349ec9-dce5-4bcf-95c2-3a565d09d00e",
+    decimals: 18,
+    address: "0xf7321385a461c4490d5526d83e63c366b149cb15",
+    lpPair: "0xea0d470d4af27123ca870c70cf41853a6e6e8313",
+  },
+  ...ploutozTokens,
 };
 
 export const getTokenData = (address: string) => tokens[address];

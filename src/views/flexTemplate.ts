@@ -1,4 +1,4 @@
-import { Position, StakingResult, WalletToken } from "../types";
+import { Position, StakingResult, Token, WalletToken } from "../types";
 import { formatNumber } from "../utils";
 
 const COLOR = {
@@ -34,6 +34,7 @@ export const tableHeader = (header: string) => ({
     {
       type: "text",
       text: header,
+      flex: 8,
       weight: "bold",
       color: COLOR.header,
       align: "start",
@@ -42,6 +43,7 @@ export const tableHeader = (header: string) => ({
     {
       type: "text",
       text: "Value",
+      flex: 4,
       weight: "bold",
       color: COLOR.header,
       align: "end",
@@ -135,13 +137,12 @@ export const poolLine = (position: Position) => ({
               contents: [
                 {
                   type: "text",
-                  text: position.tokens
-                    .map(
-                      (token) =>
-                        `${formatNumber(token.balance)} ${token.symbol}`
-                    )
-                    .join(" + "),
+                  text: getStakingBalance(
+                    position.tokens,
+                    position.tokensValue
+                  ),
                   size: "xxs",
+                  wrap: true,
                   align: "start",
                   gravity: "center",
                   color: COLOR.detail,
@@ -155,10 +156,12 @@ export const poolLine = (position: Position) => ({
               contents: [
                 {
                   type: "text",
-                  text: `Reward: ${formatNumber(position.reward.balance)} ${
-                    position.reward.symbol
-                  }`,
+                  text: `Reward: ${getStakingBalance(
+                    position.rewards,
+                    position.rewardsValue
+                  )}`,
                   size: "xxs",
+                  wrap: true,
                   align: "start",
                   gravity: "center",
                   color: COLOR.detail,
@@ -188,6 +191,14 @@ export const poolLine = (position: Position) => ({
     },
   ],
 });
+
+const getStakingBalance = (tokens: Token[], totalValue: number) =>
+  `${tokens
+    .map((token) => getTokenBalance(token))
+    .join(" + ")} ($${formatNumber(totalValue)})`;
+
+const getTokenBalance = (token: Token) =>
+  `${formatNumber(token.balance)} ${token.symbol}`;
 
 export const walletLine = (wallet: WalletToken) => ({
   type: "box",

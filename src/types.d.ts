@@ -24,6 +24,23 @@ export type LPPoolInfo = TokenPair & {
   type: "lp";
 };
 
+export type FlipPoolInfo = TokenPair & {
+  poolId: number;
+  lpAddress: string;
+  tokenDecimals: number;
+  token0Logo: string;
+  token1Logo: string;
+  rewards: Reward[];
+  type: "flip";
+};
+
+export type Reward = {
+  address: string;
+  symbol: string;
+  decimals: number;
+  logo: string;
+};
+
 export type TokenPair = {
   token0Address: string;
   token0Symbol: string;
@@ -33,14 +50,10 @@ export type TokenPair = {
   token1Decimals: number;
 };
 
-export type PoolInfo = SinglePoolInfo | LPPoolInfo;
+export type PoolInfo = SinglePoolInfo | LPPoolInfo | FlipPoolInfo;
 
 export type TokenBalance = {
   tokenBalance: number;
-};
-
-export type RewardBalance = {
-  rewardBalance: number;
 };
 
 export type LPBalance = {
@@ -60,8 +73,19 @@ export type SinglePrice = {
   tokenPrice: number;
 };
 
+export type RewardBalance = {
+  rewardBalance: number;
+};
+
 export type RewardPrice = {
   rewardPrice: number;
+};
+
+export type RewardDetailValue = {
+  [key: string]: RewardBalance & RewardPrice;
+};
+export type RewardDetail = {
+  rewardDetail: RewardDetailValue;
 };
 
 export type SingleStaking = SinglePoolInfo &
@@ -77,7 +101,13 @@ export type LPStaking = LPPoolInfo &
   LPBalance &
   LPPrice;
 
-export type Staking = SingleStaking | LPStaking;
+export type FlipStaking = FlipPoolInfo &
+  TokenBalance &
+  RewardDetail &
+  LPBalance &
+  LPPrice;
+
+export type Staking = SingleStaking | LPStaking | FlipStaking;
 
 export type Token = {
   symbol: string;
@@ -90,7 +120,9 @@ export type Token = {
 export type Position = {
   tokens: Token[];
   balance: number;
-  reward?: Token;
+  tokensValue: number;
+  rewards?: Token[];
+  rewardsValue: number;
   totalValue: number;
 };
 
@@ -120,8 +152,20 @@ export type IDefiValue = {
   address: string;
   abi: object;
   pools: PoolInfo[];
+  type: "yield" | "automate";
 };
 
 export type IDefi = {
   [key: string]: IDefiValue;
+};
+
+export type ICompoundFlipValue = {
+  address: string;
+  abi: object;
+  poolName: string;
+  performanceFee: number;
+};
+
+export type ICompoundFlip = {
+  [key: string]: ICompoundFlipValue;
 };
