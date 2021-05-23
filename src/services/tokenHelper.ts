@@ -184,6 +184,8 @@ export class TokenHelper {
   };
 
   #isBUSD = (address: string): boolean => {
-    return address === "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+    return (
+      address.toLowerCase() === "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+    );
   };
 }

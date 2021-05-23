@@ -148,24 +148,24 @@ export type WalletBalance = {
   totalValue: number;
 };
 
+export type PerformanceFee = {
+  feePercentage: number;
+  tokenAddress: string;
+};
+
+export const enum DefiType {
+  YEILD,
+  AUTOCOMPOUND,
+}
+
 export type IDefiValue = {
   address: string;
   abi: object;
   pools: PoolInfo[];
-  type: "yield" | "automate";
+  type: DefiType;
+  performance?: PerformanceFee;
 };
 
 export type IDefi = {
   [key: string]: IDefiValue;
-};
-
-export type ICompoundFlipValue = {
-  address: string;
-  abi: object;
-  poolName: string;
-  performanceFee: number;
-};
-
-export type ICompoundFlip = {
-  [key: string]: ICompoundFlipValue;
 };

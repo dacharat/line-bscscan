@@ -21,9 +21,6 @@ import { Web3Service } from "./services/web3Service";
 import { LineService } from "./services/line";
 import { DeFiService } from "./services/defi";
 import { WalletService } from "./services/wallet";
-import { CompoundFlip } from "./services/compoundFlip";
-import { compoundFlip } from "./constants/defi";
-import { getPositions } from "./services/masterchef";
 
 // Init Express
 const app = express();

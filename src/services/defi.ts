@@ -1,6 +1,6 @@
 import { partition, sortBy } from "lodash";
 import { defi } from "../constants/defi";
-import { StakingResult } from "../types";
+import { DefiType, StakingResult } from "../types";
 import { rejectAfterDelay } from "../utils";
 import { CompoundFlip } from "./compoundFlip";
 import { ContractInterface } from "./interfaces/contract";
@@ -86,11 +86,12 @@ export class DeFiService {
 
   #getMasterChef = (name: string): ContractInterface => {
     const { abi, address, type } = defi[name];
-    const contract = this.web3Service.getContract(abi, address);
 
-    if (type === "automate") {
-      return new CompoundFlip(name, contract, this.helper);
+    if (type === DefiType.AUTOCOMPOUND) {
+      return new CompoundFlip(name, this.helper, defi[name], this.web3Service);
     }
+
+    const contract = this.web3Service.getContract(abi, address);
     return new Masterchef(name, contract, this.helper);
   };
 }
