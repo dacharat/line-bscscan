@@ -19,6 +19,9 @@ import { pools as ploutozPools } from "./ploutoz/pools";
 import autosharkCF from "../abi/autoshark/StrategyCompoundFLIP.json";
 import { pools as autosharkPools } from "./autoshark/pools";
 
+import pancakebunnyCF from "../abi/pancakebunny/VaultFlipToFlip.json";
+import { pools as pancakebunnyPools } from "./pancakebunny/pools";
+
 export const defi: IDefi = {
   cake: {
     address: "0x73feaa1eE314F8c655E354234017bE2193C9E24E",
@@ -62,14 +65,24 @@ export const defi: IDefi = {
     pools: ploutozPools,
     type: DefiType.YEILD,
   },
-  autoShark: {
-    address: "0x625E4fad723A658c71B8751ea3a342565096BC06",
-    abi: autosharkCF.abi,
-    pools: autosharkPools,
+  // autoShark: { // pause for flash loan issue
+  //   address: "0x625E4fad723A658c71B8751ea3a342565096BC06",
+  //   abi: autosharkCF.abi,
+  //   pools: autosharkPools,
+  //   type: DefiType.AUTOCOMPOUND,
+  //   performance: {
+  //     feePercentage: 30,
+  //     tokenAddress: "0xf7321385a461c4490d5526d83e63c366b149cb15",
+  //   },
+  // },
+  pancakebunny: {
+    address: "0x203Ee29ba85BbDfA23bFaE5D77620AeFDaf92cB1",
+    abi: pancakebunnyCF.abi,
+    pools: pancakebunnyPools,
     type: DefiType.AUTOCOMPOUND,
     performance: {
       feePercentage: 30,
-      tokenAddress: "0xf7321385a461c4490d5526d83e63c366b149cb15",
+      tokenAddress: "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
     },
   },
 };

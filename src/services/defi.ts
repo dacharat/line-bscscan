@@ -2,6 +2,7 @@ import { partition, sortBy } from "lodash";
 import { defi } from "../constants/defi";
 import { DefiType, StakingResult } from "../types";
 import { rejectAfterDelay } from "../utils";
+import { PcBunnyCompoundFlip } from "./autocompound/pancakebunny";
 import { CompoundFlip } from "./compoundFlip";
 import { ContractInterface } from "./interfaces/contract";
 import { getPositions, Masterchef } from "./masterchef";
@@ -88,6 +89,14 @@ export class DeFiService {
     const { abi, address, type } = defi[name];
 
     if (type === DefiType.AUTOCOMPOUND) {
+      if (name === "pancakebunny") {
+        return new PcBunnyCompoundFlip(
+          name,
+          this.helper,
+          defi[name],
+          this.web3Service
+        );
+      }
       return new CompoundFlip(name, this.helper, defi[name], this.web3Service);
     }
 
