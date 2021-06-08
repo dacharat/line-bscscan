@@ -28,7 +28,7 @@ export class Jungle implements ContractInterface {
   ): Promise<Staking[]> => {
     // 1. Get staking balance
     let stakingBalance: (PoolInfo & TokenBalance)[] = await Promise.all(
-      poolInfos.map(async (poolInfo) => {
+      poolInfos.map(async (poolInfo: SinglePoolInfo) => {
         const balance = await this.#getStakingBalance(poolInfo, address);
         return { ...poolInfo, ...balance };
       })
@@ -52,7 +52,7 @@ export class Jungle implements ContractInterface {
   };
 
   #getStakingBalance = async (
-    poolInfo: PoolInfo,
+    poolInfo: SinglePoolInfo,
     address: string
   ): Promise<TokenBalance> => {
     if (!poolInfo) {
@@ -66,12 +66,9 @@ export class Jungle implements ContractInterface {
   };
 
   #getStakingReward = async (
-    poolInfo: PoolInfo,
+    poolInfo: SinglePoolInfo,
     address: string
   ): Promise<RewardBalance> => {
-    if (poolInfo.type === "flip") {
-      return null;
-    }
     const pendingReward = await this.masterchef.methods
       .pendingReward(address)
       .call();
