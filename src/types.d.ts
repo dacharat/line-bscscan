@@ -156,6 +156,7 @@ export type PerformanceFee = {
 export const enum DefiType {
   YEILD,
   AUTOCOMPOUND,
+  JUNGLE,
 }
 
 export type IDefiValue = {

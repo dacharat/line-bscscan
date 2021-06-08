@@ -4,6 +4,7 @@ import { DefiType, StakingResult } from "../types";
 import { rejectAfterDelay } from "../utils";
 import { PcBunnyCompoundFlip } from "./autocompound/pancakebunny";
 import { CompoundFlip } from "./compoundFlip";
+import { Jungle } from "./jungle";
 import { ContractInterface } from "./interfaces/contract";
 import { getPositions, Masterchef } from "./masterchef";
 import { TokenHelper } from "./tokenHelper";
@@ -88,19 +89,28 @@ export class DeFiService {
   #getMasterChef = (name: string): ContractInterface => {
     const { abi, address, type } = defi[name];
 
-    if (type === DefiType.AUTOCOMPOUND) {
-      if (name === "pancakebunny") {
-        return new PcBunnyCompoundFlip(
+    switch (type) {
+      case DefiType.AUTOCOMPOUND:
+        if (name === "pancakebunny") {
+          return new PcBunnyCompoundFlip(
+            name,
+            this.helper,
+            defi[name],
+            this.web3Service
+          );
+        }
+        return new CompoundFlip(
           name,
           this.helper,
           defi[name],
           this.web3Service
         );
-      }
-      return new CompoundFlip(name, this.helper, defi[name], this.web3Service);
+      case DefiType.JUNGLE:
+        const jungleContract = this.web3Service.getContract(abi, address);
+        return new Jungle(name, jungleContract, this.helper);
+      default:
+        const contract = this.web3Service.getContract(abi, address);
+        return new Masterchef(name, contract, this.helper);
     }
-
-    const contract = this.web3Service.getContract(abi, address);
-    return new Masterchef(name, contract, this.helper);
   };
 }

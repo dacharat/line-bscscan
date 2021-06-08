@@ -87,11 +87,38 @@ export class PcBunnyCompoundFlip implements ContractInterface {
       return null;
     }
 
+    // const earnedBalance: PoolInfo & TokenBalance = {
+    //   ...poolInfo,
+    //   tokenBalance: toDecimal(earned, poolInfo.tokenDecimals).toNumber(),
+    // };
+
+    // const underlying = await this.helper.getLPUnderlyingBalance(earnedBalance);
+    // const stakingPrice = await this.helper.getLPStakingPrice(earnedBalance);
+
+    // const staking = {
+    //   rewardBalance: earnedBalance.tokenBalance,
+    //   rewardPrice:
+    //     underlying.token0Balance * stakingPrice.token0Price +
+    //     underlying.token1Balance * stakingPrice.token1Price,
+    // };
+
+    // const bnbPrice = await this.helper.getPrice(
+    //   "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    // );
+    // const x = staking.rewardPrice / bnbPrice;
+    // console.log(staking, bnbPrice, x, x * 10 ** 18);
+
     const earnedFormatted =
       toDecimal(earned, poolInfo.tokenDecimals).toNumber() * this.RATIO;
 
     const cakePrice = await this.helper.getPrice(poolInfo.rewards[0].address);
     const cakeBalance = earnedFormatted * 0.7;
+
+    // console.log(
+    //   "2 ==> ",
+    //   (toDecimal(earned, poolInfo.tokenDecimals).toNumber() * cakePrice) /
+    //     bnbPrice
+    // );
 
     const bunnyPrice = await this.helper.getPrice(
       this.value.performance.tokenAddress

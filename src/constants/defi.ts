@@ -16,8 +16,11 @@ import { pools as garudaPools } from "./garuda/pools";
 import { pools as dopplePools } from "./dopple/pools";
 import { pools as ploutozPools } from "./ploutoz/pools";
 
-import autosharkCF from "../abi/autoshark/StrategyCompoundFLIP.json";
-import { pools as autosharkPools } from "./autoshark/pools";
+// import autosharkCF from "../abi/autoshark/StrategyCompoundFLIP.json";
+// import { pools as autosharkPools } from "./autoshark/pools";
+
+import pantherJungle from "../abi/panther/Jungle.json";
+import { pools as pantherJunglePools } from "./panther/jungle";
 
 import pancakebunnyCF from "../abi/pancakebunny/VaultFlipToFlip.json";
 import { pools as pancakebunnyPools } from "./pancakebunny/pools";
@@ -40,6 +43,12 @@ export const defi: IDefi = {
     abi: pantherMc.abi,
     pools: pantherPools,
     type: DefiType.YEILD,
+  },
+  pantherJungle: {
+    address: "0x3b5ed7b0f8bf5d2b485352e15a416092ca741c2c",
+    abi: pantherJungle.abi,
+    pools: pantherJunglePools,
+    type: DefiType.JUNGLE,
   },
   warden: {
     address: "0xde866dd77b6df6772e320dc92bff0eddc626c674",
@@ -65,8 +74,9 @@ export const defi: IDefi = {
     pools: ploutozPools,
     type: DefiType.YEILD,
   },
-  // autoShark: { // pause for flash loan issue
-  //   address: "0x625E4fad723A658c71B8751ea3a342565096BC06",
+  // autoshark: {
+  //   // pause for flash loan issue
+  //   address: "0xc1bf412E918e7ed4Df2f3438Fafd3fCadF9F3C15",
   //   abi: autosharkCF.abi,
   //   pools: autosharkPools,
   //   type: DefiType.AUTOCOMPOUND,

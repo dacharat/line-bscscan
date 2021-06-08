@@ -109,18 +109,32 @@ app.listen(port, () => {
 });
 
 // const test = async () => {
-//   const address = "0x129379a4eb447eb6e70ab015944258203d7d3e0d";
+//   const address = "0x980b257640895280a1c76c050ca12908f5e649fb";
 //   const a = new PcBunnyCompoundFlip(
 //     "pancakebunny",
 //     helper,
 //     defi["pancakebunny"],
 //     web3Service
 //   );
-//   // const conpoundFlip = new CompoundFlip(address, c, helper);
 //   a.getStaking(
 //     defi["pancakebunny"].pools,
-//     "0x129379a4eb447eb6e70ab015944258203d7d3e0d"
+//     "0x980b257640895280a1c76c050ca12908f5e649fb"
+//     );
+
+//   const cp = new CompoundFlip("aaa", helper, defi["autoshark"], web3Service);
+//   const result = await cp.getStaking(defi["autoshark"].pools, address);
+//   console.log(result);
+
+//   const c = web3Service.getContract(
+//     defi["pantherJungle"].abi,
+//     defi["pantherJungle"].address
 //   );
+//   const jungle = new Jungle("jungle", c, helper);
+//   const stakings = await jungle.getStaking(
+//     defi["pantherJungle"].pools,
+//     address
+//   );
+//   console.log(stakings);
 // };
 
 // test().then((_) => console.log("done"));
