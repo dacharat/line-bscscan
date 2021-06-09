@@ -7,6 +7,7 @@ import wardenMc from "../abi/warden/MasterChef.json";
 import garudaMc from "../abi/garuda/MasterChef.json";
 import doppleMc from "../abi/dopple/MasterChef.json";
 import ploutozMc from "../abi/ploutoz/MasterChef.json";
+import aleMc from "../abi/ale/MasterChef.json";
 
 import { pools as pancakePools } from "./pancake/pools";
 import { pools as finixPools } from "./finix/pools";
@@ -15,6 +16,7 @@ import { pools as wardenPools } from "./warden/pools";
 import { pools as garudaPools } from "./garuda/pools";
 import { pools as dopplePools } from "./dopple/pools";
 import { pools as ploutozPools } from "./ploutoz/pools";
+import { pools as alePools } from "./ale/pools";
 
 // import autosharkCF from "../abi/autoshark/StrategyCompoundFLIP.json";
 // import { pools as autosharkPools } from "./autoshark/pools";
@@ -72,6 +74,12 @@ export const defi: IDefi = {
     address: "0x9cd0daac9d1caa9e937fc5bb4e1c0e058d9b6f94",
     abi: ploutozMc.abi,
     pools: ploutozPools,
+    type: DefiType.YEILD,
+  },
+  ale: {
+    address: "0x0646edade9c7e8ae361e51721118333b2978f333",
+    abi: aleMc.abi,
+    pools: alePools,
     type: DefiType.YEILD,
   },
   // autoshark: {

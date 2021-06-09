@@ -8,11 +8,9 @@ export const whitelist: string[] = [
   "0xf7844cb890f4c339c497aeab599abdc3c874b67a", // NFT art
   "0x0feadcc3824e7f3c12f40e324a60c23ca51627fc", // WARDEN
   "0x854086dc841e1bfae50cb615bf41f55bf432a90b", // GARUDA
-  "0x88371dec00bc3543231e01089c3dc6d94289d4af", // GATOR
-  "0xdf5a096d33de84b11041a7ff78e7008c328184ab", // GRZ
   "0x437dbc6ade5c2aed52bf5ccb54bf1b87a53cc436", // PTZ
-  "0x844fa82f1e54824655470970f7004dd90546bb28", // DOP
-  "0xf7321385a461c4490d5526d83e63c366b149cb15", // SHARK
+  "0x99ca242f20424a6565cc17a409e557fa95e25bd7", // ALE
+  "0x19ea6042ca81bcd1fec329004fd5967afdc6745e", // CRAFT
 ];
 
 export const unlistedCoingeckoToken: string[] = [
@@ -22,7 +20,8 @@ export const unlistedCoingeckoToken: string[] = [
   "0x88371dec00bc3543231e01089c3dc6d94289d4af", // GATOR
   "0xdf5a096d33de84b11041a7ff78e7008c328184ab", // GRZ
   "0x437dbc6ade5c2aed52bf5ccb54bf1b87a53cc436", // PTZ
-  "0xf7321385a461c4490d5526d83e63c366b149cb15", // SHARK
+  "0x99ca242f20424a6565cc17a409e557fa95e25bd7", // ALE
+  "0x19ea6042ca81bcd1fec329004fd5967afdc6745e", // CRAFT
 ];
 
 export const stableCoinLp: string[] = [

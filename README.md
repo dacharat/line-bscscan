@@ -33,6 +33,7 @@
 - [DoppleFinance](https://dopple.finance/)
 - [PloutozFinance](https://www.ploutoz.finance/)
 - [AutoShark](https://autoshark.finance/)
+- [AleSwap](https://aleswap.finance/#/)
 
 #### How to add new pool
 - add pool MasterChef abi to `src/abi/{pool}/MasterChef.json`

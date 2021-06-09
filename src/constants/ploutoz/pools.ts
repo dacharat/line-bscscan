@@ -9,7 +9,7 @@ export const pools: PoolInfo[] = [
     token0Symbol: "PTZ",
     token0Decimals: 18,
     token0Logo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     token1Address: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
     token1Symbol: "WBNB",
     token1Decimals: 18,
@@ -19,7 +19,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "lp",
   },
   {
@@ -30,7 +30,7 @@ export const pools: PoolInfo[] = [
     token0Symbol: "PTZ",
     token0Decimals: 18,
     token0Logo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     token1Address: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
     token1Symbol: "BUSD",
     token1Decimals: 18,
@@ -40,7 +40,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "lp",
   },
   {
@@ -54,7 +54,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
   {
@@ -68,7 +68,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
   {
@@ -82,7 +82,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
   {
@@ -96,7 +96,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
   {
@@ -110,7 +110,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
   {
@@ -124,7 +124,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
   {
@@ -138,7 +138,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
   {
@@ -152,7 +152,7 @@ export const pools: PoolInfo[] = [
     rewardSymbol: "PTZ",
     rewardDecimals: 18,
     rewardLogo:
-      "https://pbs.twimg.com/profile_images/1392157915675435012/QBRogwJc_400x400.jpg",
+      "https://www.ploutoz.finance/static/media/ploutos.cb477e15.svg",
     type: "single",
   },
 ];
