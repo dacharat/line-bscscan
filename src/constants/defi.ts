@@ -4,27 +4,21 @@ import cakeMc from "../abi/pancake/MasterChef.json";
 import definixMc from "../abi/definix/MasterChef.json";
 import pantherMc from "../abi/panther/MasterChef.json";
 import wardenMc from "../abi/warden/MasterChef.json";
-import garudaMc from "../abi/garuda/MasterChef.json";
 import doppleMc from "../abi/dopple/MasterChef.json";
 import ploutozMc from "../abi/ploutoz/MasterChef.json";
 import aleMc from "../abi/ale/MasterChef.json";
+import pantherJungle from "../abi/panther/Jungle.json";
+import pancakebunnyCF from "../abi/pancakebunny/VaultFlipToFlip.json";
 
 import { pools as pancakePools } from "./pancake/pools";
 import { pools as finixPools } from "./finix/pools";
 import { pools as pantherPools } from "./panther/pools";
 import { pools as wardenPools } from "./warden/pools";
-import { pools as garudaPools } from "./garuda/pools";
 import { pools as dopplePools } from "./dopple/pools";
 import { pools as ploutozPools } from "./ploutoz/pools";
 import { pools as alePools } from "./ale/pools";
-
-// import autosharkCF from "../abi/autoshark/StrategyCompoundFLIP.json";
-// import { pools as autosharkPools } from "./autoshark/pools";
-
-import pantherJungle from "../abi/panther/Jungle.json";
+import { pools as aleStakingPools } from "./ale/jungle";
 import { pools as pantherJunglePools } from "./panther/jungle";
-
-import pancakebunnyCF from "../abi/pancakebunny/VaultFlipToFlip.json";
 import { pools as pancakebunnyPools } from "./pancakebunny/pools";
 
 export const defi: IDefi = {
@@ -58,12 +52,6 @@ export const defi: IDefi = {
     pools: wardenPools,
     type: DefiType.YEILD,
   },
-  garuda: {
-    address: "0xf6afb97ac5eafad60d3ad19c2f85e0bd6b7eaccf",
-    abi: garudaMc.abi,
-    pools: garudaPools,
-    type: DefiType.YEILD,
-  },
   dopple: {
     address: "0xda0a175960007b0919dbf11a38e6ec52896bddbe",
     abi: doppleMc.abi,
@@ -82,6 +70,12 @@ export const defi: IDefi = {
     pools: alePools,
     type: DefiType.YEILD,
   },
+  alestakingreward: {
+    address: "0xA9B106D55782705202460A11f5e64D8d0E4aEd75",
+    abi: pancakebunnyCF.abi,
+    pools: aleStakingPools,
+    type: DefiType.JUNGLE,
+  },
   // autoshark: {
   //   // pause for flash loan issue
   //   address: "0xc1bf412E918e7ed4Df2f3438Fafd3fCadF9F3C15",
@@ -92,6 +86,12 @@ export const defi: IDefi = {
   //     feePercentage: 30,
   //     tokenAddress: "0xf7321385a461c4490d5526d83e63c366b149cb15",
   //   },
+  // },
+  // garuda: {
+  //   address: "0xf6afb97ac5eafad60d3ad19c2f85e0bd6b7eaccf",
+  //   abi: garudaMc.abi,
+  //   pools: garudaPools,
+  //   type: DefiType.YEILD,
   // },
   pancakebunny: {
     address: "0x203Ee29ba85BbDfA23bFaE5D77620AeFDaf92cB1",

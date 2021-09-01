@@ -1,6 +1,6 @@
 # line-bscscan
 
-![](https://raw.githubusercontent.com/dacharat/line-bscscan/main/assets/BSC%20Scanner.gif?token=AGARWYCF3BFTVLTVB4W22YDATJWMU)
+![](https://github.com/dacharat/line-bscscan/blob/main/assets/BSC_Scanner.gif?raw=true)
 
 ### Get started
 
@@ -29,7 +29,6 @@
 - [Defnix](https://bsc.definix.com/)
 - [PantherSwap](https://pantherswap.com/)
 - [WardenSwap](https://www.wardenswap.finance/#/)
-- [GarudaSwap](https://garudaswap.finance/)
 - [DoppleFinance](https://dopple.finance/)
 - [PloutozFinance](https://www.ploutoz.finance/)
 - [AutoShark](https://autoshark.finance/)

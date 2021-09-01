@@ -9,6 +9,7 @@ import { ContractInterface } from "./interfaces/contract";
 import { getPositions, Masterchef } from "./masterchef";
 import { TokenHelper } from "./tokenHelper";
 import { Web3Service } from "./web3Service";
+import { AleStakingReward } from "./stakingreward/ale";
 
 export class DeFiService {
   private contracts: ContractInterface[];
@@ -106,6 +107,14 @@ export class DeFiService {
           this.web3Service
         );
       case DefiType.JUNGLE:
+        if (name == "alestakingreward") {
+          return new AleStakingReward(
+            name,
+            this.helper,
+            defi[name],
+            this.web3Service
+          );
+        }
         const jungleContract = this.web3Service.getContract(abi, address);
         return new Jungle(name, jungleContract, this.helper);
       default:
